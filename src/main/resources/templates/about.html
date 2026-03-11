@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title th:text="${title}">Giới thiệu</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+	<div class="wrap">
+		<nav>
+			<a href="/" class="logo">Demo<span>.</span>Web</a>
+			<ul>
+				<li><a href="/">Trang chủ</a></li>
+				<li><a href="/about" class="active">Giới thiệu</a></li>
+				<li><a href="/users">Danh sách User</a></li>
+				<li><a href="/courses">Khóa học</a></li>
+			</ul>
+		</nav>
+
+		<main>
+			<h1 class="page-title">Giới thiệu</h1>
+			<div class="about-content">
+				<p>Đây là ứng dụng web demo được tạo bằng <strong>Spring Boot</strong> và <strong>Thymeleaf</strong>. Bạn có thể dùng nó làm điểm bắt đầu cho dự án của mình.</p>
+				<p>Các tính năng hiện có:</p>
+				<ul>
+					<li>Trang chủ với hero và thẻ giới thiệu công nghệ</li>
+					<li>Trang Giới thiệu (About)</li>
+					<li>Giao diện tối (dark theme) với màu nhấn vàng amber</li>
+					<li>Font chữ Be Vietnam Pro, responsive</li>
+				</ul>
+				<p>Chúc bạn code vui vẻ.</p>
+			</div>
+		</main>
+
+		<footer>
+			<p>Demo Web · Spring Boot 4 · Java 25</p>
+		</footer>
+	</div>
+</body>
+</html>

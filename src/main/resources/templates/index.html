@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title th:text="${title}">Trang chủ</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+	<div class="wrap">
+		<nav>
+			<a href="/" class="logo">Demo<span>.</span>Web</a>
+			<ul>
+				<li><a href="/" class="active">Trang chủ</a></li>
+				<li><a href="/about">Giới thiệu</a></li>
+				<li><a href="/users">Danh sách User</a></li>
+				<li><a href="/courses">Khóa học</a></li>
+				<li><a href="/logout">Đăng xuất</a></li>
+			</ul>
+		</nav>
+
+		<main>
+			<section class="hero">
+				<h1>Chào mừng đến <span class="highlight">Demo Web</span></h1>
+				<p>Ứng dụng web mẫu được xây dựng bằng Spring Boot và Thymeleaf. Đơn giản, hiện đại và dễ mở rộng.</p>
+				<div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+					<a href="/about" class="btn">Tìm hiểu thêm</a>
+					<a href="/" class="btn btn-outline">Khám phá</a>
+				</div>
+			</section>
+
+			<section class="cards">
+				<div class="card">
+					<h3>Spring Boot</h3>
+					<p>Framework Java giúp tạo ứng dụng độc lập, production-ready với cấu hình tối thiểu.</p>
+				</div>
+				<div class="card">
+					<h3>Thymeleaf</h3>
+					<p>Template engine cho phép tạo HTML động trên server với cú pháp tự nhiên.</p>
+				</div>
+				<div class="card">
+					<h3>Maven</h3>
+					<p>Quản lý dependency và build project một cách dễ dàng và nhất quán.</p>
+				</div>
+			</section>
+		</main>
+
+		<footer>
+			<p>Demo Web · Spring Boot 4 · Java 25</p>
+		</footer>
+	</div>
+</body>
+</html>
