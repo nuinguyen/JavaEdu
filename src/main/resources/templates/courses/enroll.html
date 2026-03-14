@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/layout :: head(${title})}"></head>
+<body>
+	<nav th:replace="~{fragments/layout :: nav('courses', ${isAdmin})}"></nav>
+
+	<main>
+		<div class="container">
+			<h1 class="page-heading mb-4">Đăng ký khóa học</h1>
+
+			<p class="mb-2">Bạn đang đăng ký:</p>
+			<p class="fw-semibold mb-4" th:text="${course.title}">Tên khóa học</p>
+
+			<form th:action="@{/courses/{id}/enroll(id=${course.id})}" method="post">
+				<button type="submit" class="btn btn-app-primary">Xác nhận đăng ký</button>
+				<a th:href="@{/courses/{id}(id=${course.id})}" class="btn btn-app-outline ms-2">Quay lại</a>
+			</form>
+		</div>
+	</main>
+
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
+	<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

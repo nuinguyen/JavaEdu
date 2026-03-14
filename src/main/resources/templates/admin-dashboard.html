@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/admin-layout :: head(${title})}"></head>
+<body>
+  <div th:replace="~{fragments/admin-layout :: overlay}"></div>
+  <div th:replace="~{fragments/admin-layout :: sidebar('home')}"></div>
+
+  <div id="main">
+    <div th:replace="~{fragments/admin-layout :: topbar(${title})}"></div>
+    <div class="content">
+
+      <!-- STAT CARDS -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-xl-3 fade-in">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(79,142,247,.12);color:#4f8ef7"><i class="bi bi-people-fill"></i></div>
+            <div class="stat-val" th:text="${totalUsers != null ? totalUsers : 0}">0</div>
+            <div class="stat-label">Tổng học viên / User</div>
+            <div class="stat-change change-up"><i class="bi bi-arrow-up-short"></i>+12% so tháng trước</div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3 fade-in" style="animation-delay:.05s">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(79,247,168,.12);color:#4ff7a8"><i class="bi bi-collection-fill"></i></div>
+            <div class="stat-val" th:text="${totalCourses != null ? totalCourses : 0}">0</div>
+            <div class="stat-label">Khóa học đang mở</div>
+            <div class="stat-change change-up"><i class="bi bi-arrow-up-short"></i>+2 so tháng trước</div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3 fade-in" style="animation-delay:.1s">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(247,196,79,.12);color:#f7c44f"><i class="bi bi-hourglass-split"></i></div>
+            <div class="stat-val" th:text="${pendingEnrollments != null ? pendingEnrollments : 0}">0</div>
+            <div class="stat-label">Lượt đăng ký chờ duyệt</div>
+            <div class="stat-change change-up"><i class="bi bi-arrow-up-short"></i>Hôm nay</div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3 fade-in" style="animation-delay:.15s">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(247,79,142,.12);color:#f74f8e"><i class="bi bi-check-circle-fill"></i></div>
+            <div class="stat-val" th:text="${approvedEnrollments != null ? approvedEnrollments : 0}">0</div>
+            <div class="stat-label">Đăng ký đã duyệt</div>
+            <div class="stat-change change-down"><i class="bi bi-arrow-down-short"></i>-2% so tuần trước</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-8">
+          <div class="chart-card">
+            <div class="chart-header">
+              <span class="sec-title mb-0">Doanh thu & Học viên mới</span>
+              <select class="filter-select">
+                <option>7 ngày qua</option><option>30 ngày</option><option>3 tháng</option>
+              </select>
+            </div>
+            <canvas id="revenueChart" height="90"></canvas>
+          </div>
+        </div>
+        <div class="col-12 col-lg-4">
+          <div class="chart-card h-100">
+            <div class="sec-title">Phân bổ khóa học</div>
+            <canvas id="pieChart" height="160"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLE + ACTIVITY -->
+      <div class="row g-3">
+        <div class="col-12 col-lg-8">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="sec-title mb-0">Học viên mới nhất</span>
+            <a th:href="@{/users}" class="btn btn-sm" style="background:rgba(79,142,247,.12);color:var(--accent);border:none;font-size:.78rem;border-radius:7px">Xem tất cả →</a>
+          </div>
+          <div class="data-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>HỌC VIÊN</th>
+                  <th>KHÓA HỌC</th>
+                  <th>TRẠNG THÁI</th>
+                  <th>NGÀY ĐĂNG KÝ</th>
+                  <th>ACTION</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="avatar-sm" style="background:#4f8ef7">NA</div>
+                      <div>
+                        <div style="font-weight:600;font-size:.82rem">Nguyễn Văn An</div>
+                        <div style="font-size:.72rem;color:var(--muted)">an.nguyen@gmail.com</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="course-pill" style="background:#f06529;color:#fff">HTML5</span>
+                    <span class="course-pill" style="background:#264de4;color:#fff">CSS3</span>
+                  </td>
+                  <td><span class="status-badge status-active">Hoạt động</span></td>
+                  <td style="color:var(--muted);font-size:.8rem">10/03/2025</td>
+                  <td>
+                    <div class="d-flex gap-1">
+                      <a th:href="@{/users}" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem" title="Xem"><i class="bi bi-eye"></i></a>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="avatar-sm" style="background:#f74f8e">TB</div>
+                      <div>
+                        <div style="font-weight:600;font-size:.82rem">Trần Thị Bình</div>
+                        <div style="font-size:.72rem;color:var(--muted)">binh.tran@gmail.com</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="course-pill" style="background:#f7df1e;color:#000">JavaScript</span>
+                    <span class="course-pill" style="background:#61dafb;color:#000">React</span>
+                  </td>
+                  <td><span class="status-badge status-active">Hoạt động</span></td>
+                  <td style="color:var(--muted);font-size:.8rem">08/03/2025</td>
+                  <td>
+                    <div class="d-flex gap-1">
+                      <a th:href="@{/users}" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem" title="Xem"><i class="bi bi-eye"></i></a>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="avatar-sm" style="background:#4ff7a8">LC</div>
+                      <div>
+                        <div style="font-weight:600;font-size:.82rem">Lê Minh Châu</div>
+                        <div style="font-size:.72rem;color:var(--muted)">chau.le@gmail.com</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="course-pill" style="background:#7c5cfc;color:#fff">Full-Stack</span>
+                  </td>
+                  <td><span class="status-badge status-pending">Chờ duyệt</span></td>
+                  <td style="color:var(--muted);font-size:.8rem">12/03/2025</td>
+                  <td>
+                    <div class="d-flex gap-1">
+                      <a th:href="@{/users}" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem" title="Xem"><i class="bi bi-eye"></i></a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-12 col-lg-4">
+          <div class="chart-card mb-3">
+            <div class="sec-title">Tiến độ khóa học</div>
+            <div class="prog-item" style="margin-bottom:.9rem">
+              <div class="prog-label" style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.35rem"><span>HTML5</span><span style="color:var(--muted)">88%</span></div>
+              <div class="prog-bar" style="height:6px;background:rgba(255,255,255,.07);border-radius:100px;overflow:hidden"><div class="prog-fill" style="height:100%;border-radius:100px;transition:width 1s ease;width:88%;background:var(--accent)"></div></div>
+            </div>
+            <div class="prog-item" style="margin-bottom:.9rem">
+              <div class="prog-label" style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.35rem"><span>CSS3</span><span style="color:var(--muted)">74%</span></div>
+              <div class="prog-bar" style="height:6px;background:rgba(255,255,255,.07);border-radius:100px;overflow:hidden"><div class="prog-fill" style="height:100%;border-radius:100px;transition:width 1s ease;width:74%;background:#4ff7a8"></div></div>
+            </div>
+            <div class="prog-item" style="margin-bottom:.9rem">
+              <div class="prog-label" style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.35rem"><span>JavaScript</span><span style="color:var(--muted)">61%</span></div>
+              <div class="prog-bar" style="height:6px;background:rgba(255,255,255,.07);border-radius:100px;overflow:hidden"><div class="prog-fill" style="height:100%;border-radius:100px;transition:width 1s ease;width:61%;background:#f7c44f"></div></div>
+            </div>
+            <div class="prog-item" style="margin-bottom:.9rem">
+              <div class="prog-label" style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.35rem"><span>React</span><span style="color:var(--muted)">45%</span></div>
+              <div class="prog-bar" style="height:6px;background:rgba(255,255,255,.07);border-radius:100px;overflow:hidden"><div class="prog-fill" style="height:100%;border-radius:100px;transition:width 1s ease;width:45%;background:#f74f8e"></div></div>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="sec-title">Hoạt động gần đây</div>
+            <div class="activity-item" style="display:flex;gap:.9rem;padding:.75rem 0;border-bottom:1px solid var(--border)">
+              <div class="activity-icon" style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;background:rgba(79,142,247,.12);color:#4f8ef7"><i class="bi bi-person-plus-fill"></i></div>
+              <div>
+                <div class="activity-text" style="font-size:.82rem;line-height:1.5"><strong>Đỗ Hải Yến</strong> đăng ký React 18</div>
+                <div class="activity-time" style="font-size:.7rem;color:var(--muted);margin-top:.1rem">2 phút trước</div>
+              </div>
+            </div>
+            <div class="activity-item" style="display:flex;gap:.9rem;padding:.75rem 0;border-bottom:1px solid var(--border)">
+              <div class="activity-icon" style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;background:rgba(79,247,168,.12);color:#4ff7a8"><i class="bi bi-cash-coin"></i></div>
+              <div>
+                <div class="activity-text" style="font-size:.82rem;line-height:1.5">Thanh toán <strong>2.5tr</strong> từ Bùi Thế Long</div>
+                <div class="activity-time" style="font-size:.7rem;color:var(--muted);margin-top:.1rem">15 phút trước</div>
+              </div>
+            </div>
+            <div class="activity-item" style="display:flex;gap:.9rem;padding:.75rem 0;border-bottom:1px solid var(--border)">
+              <div class="activity-icon" style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;background:rgba(247,196,79,.12);color:#f7c44f"><i class="bi bi-star-fill"></i></div>
+              <div>
+                <div class="activity-text" style="font-size:.82rem;line-height:1.5"><strong>Nguyễn Văn An</strong> đánh giá ★★★★★</div>
+                <div class="activity-time" style="font-size:.7rem;color:var(--muted);margin-top:.1rem">1 giờ trước</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div th:replace="~{fragments/admin-layout :: scripts}"></div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <script>
+    setTimeout(()=>{
+      // Line chart
+      const revenueCanvas = document.getElementById('revenueChart');
+      if (revenueCanvas) {
+        const labels = ['T2','T3','T4','T5','T6','T7','CN'];
+        new Chart(revenueCanvas,{
+          type:'line',
+          data:{
+            labels,
+            datasets:[
+              {label:'Doanh thu (tr)',data:[5.2,7.8,6.1,9.4,8.3,11.2,10.5],
+               borderColor:'#4f8ef7',backgroundColor:'rgba(79,142,247,.08)',
+               tension:.4,fill:true,pointRadius:4,pointBackgroundColor:'#4f8ef7'},
+              {label:'Học viên mới',data:[12,18,14,22,19,26,24],
+               borderColor:'#4ff7a8',backgroundColor:'rgba(79,247,168,.06)',
+               tension:.4,fill:true,pointRadius:4,pointBackgroundColor:'#4ff7a8'},
+            ]
+          },
+          options:{
+            responsive:true,
+            plugins:{legend:{labels:{color:'#6b7280',font:{size:11}}}},
+            scales:{
+              x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6b7280',font:{size:11}}},
+              y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6b7280',font:{size:11}}}
+            }
+          }
+        });
+      }
+
+      // Pie chart
+      const pieCanvas = document.getElementById('pieChart');
+      if (pieCanvas) {
+        new Chart(pieCanvas,{
+          type:'doughnut',
+          data:{
+            labels:['HTML5','CSS3','JavaScript','React','Node.js','Full-Stack'],
+            datasets:[{
+              data:[18,22,30,15,8,7],
+              backgroundColor:['#f06529','#264de4','#f7df1e','#61dafb','#3c873a','#7c5cfc'],
+              borderWidth:0, hoverOffset:6
+            }]
+          },
+          options:{
+            responsive:true, cutout:'68%',
+            plugins:{legend:{position:'bottom',labels:{color:'#6b7280',font:{size:10},padding:10}}}
+          }
+        });
+      }
+    },50);
+  </script>
+</body>
+</html>

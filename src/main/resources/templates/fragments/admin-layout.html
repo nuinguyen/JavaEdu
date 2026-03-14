@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:fragment="head(title)">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}" />
+  <meta th:if="${_csrf != null}" name="_csrf_header" th:content="${_csrf.headerName}" />
+  <title th:text="${title}">Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --sidebar-w: 260px;
+      --bg: #0d0f1a;
+      --surface: #131520;
+      --card-bg: #191c2e;
+      --border: rgba(255,255,255,.07);
+      --accent: #4f8ef7;
+      --accent2: #f74f8e;
+      --accent3: #4ff7a8;
+      --accent4: #f7c44f;
+      --text: #dde2f0;
+      --muted: #6b7280;
+      --sidebar-bg: #10121f;
+      --header-bg: rgba(13,15,26,.92);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    #sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      z-index: 200; transition: transform .3s ease;
+    }
+    .sidebar-logo {
+      padding: 1.5rem 1.4rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem; font-weight: 800;
+      letter-spacing: -.02em;
+    }
+    .sidebar-logo span { color: var(--accent); }
+    .sidebar-logo small { display: block; font-size: .68rem; font-weight: 400; color: var(--muted); letter-spacing: .08em; margin-top: .1rem; }
+
+    .sidebar-section-label {
+      font-size: .65rem; font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); padding: 1.2rem 1.4rem .4rem;
+    }
+    .nav-item-custom {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .6rem 1.2rem; margin: .1rem .7rem;
+      border-radius: 8px; color: var(--muted);
+      text-decoration: none; font-size: .875rem; font-weight: 500;
+      transition: background .2s, color .2s;
+      border: none; background: none; width: calc(100% - 1.4rem);
+      text-align: left; cursor: pointer;
+    }
+    .nav-item-custom:hover { background: rgba(79,142,247,.1); color: var(--text); }
+    .nav-item-custom.active { background: rgba(79,142,247,.15); color: var(--accent); }
+    a.nav-item-custom { cursor: pointer; }
+    .nav-item-custom .bi { font-size: 1rem; flex-shrink: 0; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--accent2); color: #fff;
+      font-size: .6rem; font-weight: 700;
+      padding: .1rem .45rem; border-radius: 100px;
+    }
+    .sidebar-bottom {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding: 1rem;
+    }
+    .user-card {
+      display: flex; align-items: center; gap: .8rem;
+      padding: .6rem .8rem; border-radius: 10px;
+      color: var(--text); text-decoration: none;
+    }
+    .user-avatar {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .8rem; color: #fff; flex-shrink: 0;
+    }
+    .user-name { font-size: .82rem; font-weight: 600; }
+    .user-role { font-size: .7rem; color: var(--muted); }
+
+    #main { margin-left: var(--sidebar-w); min-height: 100vh; display: flex; flex-direction: column; }
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--header-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: .85rem 1.8rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .topbar-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+    .topbar-search {
+      flex: 1; max-width: 340px; margin-left: auto;
+      position: relative;
+    }
+    .topbar-search input {
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      color: var(--text); font-size: .85rem;
+      padding: .5rem 1rem .5rem 2.4rem;
+      border-radius: 8px; width: 100%; outline: none;
+    }
+    .topbar-search input:focus { border-color: var(--accent); }
+    .topbar-search .bi { position: absolute; left: .75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .9rem; }
+    .topbar-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: rgba(255,255,255,.05); border: 1px solid var(--border);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 1rem;
+      transition: background .2s, color .2s;
+      text-decoration: none;
+    }
+    .topbar-icon:hover { background: rgba(79,142,247,.12); color: var(--accent); }
+    .content { padding: 1.8rem; flex: 1; }
+
+    .data-table {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+    }
+    .data-table table { width: 100%; border-collapse: collapse; }
+    .data-table thead th {
+      padding: .85rem 1.2rem;
+      font-size: .7rem; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+    }
+    .data-table tbody td {
+      padding: .85rem 1.2rem; font-size: .85rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover td { background: rgba(79,142,247,.04); }
+
+    .admin-btn-primary {
+      background: var(--accent); color: #fff;
+      border: none; padding: .5rem 1rem;
+      border-radius: 8px; font-weight: 600; font-size: .85rem;
+      text-decoration: none; display: inline-flex; align-items: center; gap: .35rem;
+      transition: opacity .2s;
+    }
+    .admin-btn-primary:hover { color: #fff; opacity: .9; }
+    .admin-btn-outline {
+      background: transparent; color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: .35rem .75rem; border-radius: 6px;
+      font-size: .8rem; text-decoration: none;
+      transition: background .2s, color .2s;
+    }
+    .admin-btn-outline:hover { background: rgba(79,142,247,.15); color: var(--accent); }
+    .admin-btn-danger {
+      background: transparent; color: var(--accent2);
+      border: 1px solid var(--accent2);
+      padding: .35rem .75rem; border-radius: 6px;
+      font-size: .8rem;
+      transition: background .2s, color .2s;
+    }
+    .admin-btn-danger:hover { background: rgba(247,79,142,.15); color: var(--accent2); }
+    .status-badge {
+      font-size: .7rem; font-weight: 600; padding: .2rem .65rem;
+      border-radius: 100px; letter-spacing: .04em;
+    }
+    .status-active, .status-approved { background: rgba(79,247,168,.12); color: var(--accent3); }
+    .status-pending { background: rgba(247,196,79,.12); color: var(--accent4); }
+
+    .chart-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.4rem;
+    }
+    .sec-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 1.1rem; }
+    .filter-select {
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border); color: var(--text);
+      font-size: .78rem; padding: .35rem .8rem;
+      border-radius: 7px; outline: none;
+    }
+    .form-control.admin-input, .form-select.admin-input {
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+    }
+    .form-control.admin-input:focus, .form-select.admin-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79,142,247,.2);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+    }
+    .form-label.admin-label { color: var(--muted); font-size: .85rem; }
+    .alert-admin-success { background: rgba(79,247,168,.12); color: var(--accent3); border: 1px solid rgba(79,247,168,.3); border-radius: 8px; }
+    .alert-admin-danger { background: rgba(247,79,142,.12); color: var(--accent2); border: 1px solid rgba(247,79,142,.3); border-radius: 8px; }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.4rem;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,.35); }
+    .stat-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; margin-bottom: 1rem; }
+    .stat-val { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; line-height: 1; }
+    .stat-label { font-size: .78rem; color: var(--muted); margin-top: .3rem; }
+    .stat-change { font-size: .75rem; font-weight: 600; padding: .15rem .5rem; border-radius: 100px; margin-top: .8rem; display: inline-flex; align-items: center; gap: .3rem; }
+    .change-up { background: rgba(79,247,168,.12); color: var(--accent3); }
+    .change-down { background: rgba(247,79,142,.12); color: var(--accent2); }
+
+    .avatar-sm { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .course-pill { font-size: .7rem; padding: .18rem .55rem; border-radius: 5px; font-weight: 500; margin-right: .25rem; display: inline-block; }
+
+    .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
+    .prog-item { margin-bottom: .9rem; }
+    .prog-label { display: flex; justify-content: space-between; font-size: .8rem; margin-bottom: .35rem; }
+    .prog-label span:last-child { color: var(--muted); }
+    .prog-bar { height: 6px; background: rgba(255,255,255,.07); border-radius: 100px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 100px; transition: width 1s ease; }
+
+    .activity-item { display: flex; gap: .9rem; padding: .75rem 0; border-bottom: 1px solid var(--border); }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .85rem; flex-shrink: 0; }
+    .activity-text { font-size: .82rem; line-height: 1.5; }
+    .activity-text strong { color: var(--text); font-weight: 600; }
+    .activity-time { font-size: .7rem; color: var(--muted); margin-top: .1rem; }
+    
+    .fade-in { animation: fadeUp .5s ease both; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    @media (max-width: 992px) {
+      #sidebar { transform: translateX(-100%); }
+      #sidebar.open { transform: none; }
+      #main { margin-left: 0; }
+    }
+    #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 150; }
+    #overlay.show { display: block; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <div th:fragment="overlay" id="overlay" onclick="closeSidebar()"></div>
+  <div th:fragment="sidebar(activePage)" id="sidebar">
+    <a href="/" class="sidebar-logo" style="text-decoration:none;color:inherit">
+      Demo<span>.</span>Web
+      <small>ADMIN PANEL</small>
+    </a>
+    <div class="sidebar-section-label">Tổng quan</div>
+    <a href="/admin" class="nav-item-custom" th:classappend="${activePage == 'home'} ? 'active' : ''"><i class="bi bi-grid-1x2-fill"></i> Trang chủ</a>
+    <div class="sidebar-section-label">Quản lý</div>
+    <a th:href="@{/users}" class="nav-item-custom" th:classappend="${activePage == 'users'} ? 'active' : ''"><i class="bi bi-people-fill"></i> Học viên / User</a>
+    <a th:href="@{/courses}" class="nav-item-custom" th:classappend="${activePage == 'courses'} ? 'active' : ''"><i class="bi bi-collection-fill"></i> Khóa học</a>
+    <a th:href="@{/enrollments}" class="nav-item-custom" th:classappend="${activePage == 'enrollments'} ? 'active' : ''"><i class="bi bi-receipt"></i> Đăng ký</a>
+    <div class="sidebar-bottom">
+      <a th:href="@{/logout}" class="user-card" style="text-decoration:none;color:inherit">
+        <div class="user-avatar" th:text="${(currentUser != null and currentUser.name != null) ? (#strings.length(currentUser.name) >= 2 ? #strings.substring(currentUser.name, 0, 2) : #strings.substring(currentUser.name, 0, 1)) : 'AD'}">AD</div>
+        <div>
+          <div class="user-name" th:text="${(currentUser != null and currentUser.name != null) ? currentUser.name : 'Admin'}">Admin</div>
+          <div class="user-role">Đăng xuất</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div th:fragment="topbar(pageTitle)" class="topbar">
+    <button class="topbar-icon d-lg-none" type="button" onclick="document.getElementById('sidebar').classList.add('open'); document.getElementById('overlay').classList.add('show');"><i class="bi bi-list"></i></button>
+    <span class="topbar-title" th:text="${pageTitle}">Admin</span>
+    <div class="topbar-search ms-auto">
+      <i class="bi bi-search"></i>
+      <input type="text" placeholder="Tìm kiếm..." readonly tabindex="-1"/>
+    </div>
+    <a th:href="@{/}" class="topbar-icon ms-1" title="Về trang chủ"><i class="bi bi-house"></i></a>
+    <a th:href="@{/logout}" class="user-avatar ms-2" style="cursor:pointer;text-decoration:none;color:inherit" title="Đăng xuất" th:text="${(currentUser != null and currentUser.name != null) ? (#strings.length(currentUser.name) >= 2 ? #strings.substring(currentUser.name, 0, 2) : #strings.substring(currentUser.name, 0, 1)) : 'AD'}">AD</a>
+  </div>
+
+  <div th:fragment="scripts">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+      document.getElementById('overlay') && document.getElementById('overlay').addEventListener('click', closeSidebar);
+    </script>
+  </div>
+</body>
+</html>

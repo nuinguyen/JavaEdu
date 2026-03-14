@@ -1,63 +1,78 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title th:text="${title}">Thêm / Sửa khóa học</title>
-	<link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/admin-layout :: head(${title})}"></head>
 <body>
-	<div class="wrap">
-		<nav>
-			<a href="/" class="logo">Demo<span>.</span>Web</a>
-			<ul>
-				<li><a href="/">Trang chủ</a></li>
-				<li><a href="/about">Giới thiệu</a></li>
-				<li><a href="/users">Danh sách User</a></li>
-				<li><a href="/courses" class="active">Khóa học</a></li>
-			</ul>
-		</nav>
+  <div th:replace="~{fragments/admin-layout :: overlay}"></div>
+  <div th:replace="~{fragments/admin-layout :: sidebar('courses')}"></div>
 
-		<main>
-			<h1 class="page-title" th:text="${title}">Thêm khóa học</h1>
+  <div id="main">
+    <div th:replace="~{fragments/admin-layout :: topbar(${title})}"></div>
+    <div class="content">
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+          <div class="chart-card">
+            <div class="sec-title mb-3" th:text="${title}">Thêm khóa học</div>
+            <form th:action="@{/courses/save}" th:object="${course}" method="post" enctype="multipart/form-data">
+              <input type="hidden" th:field="*{id}">
+              <div class="mb-3">
+                <label for="title" class="form-label admin-label">Tiêu đề khóa học <span style="color:var(--accent2)">*</span></label>
+                <input type="text" th:field="*{title}" class="form-control admin-input" required placeholder="Nhập tiêu đề">
+                <div class="form-text" style="color:var(--accent2)" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+              </div>
+              <div class="mb-3">
+                <label for="description" class="form-label admin-label">Mô tả</label>
+                <textarea th:field="*{description}" class="form-control admin-input" rows="4" placeholder="Mô tả nội dung khóa học"></textarea>
+                <div class="form-text" style="color:var(--accent2)" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+              </div>
+              <div class="mb-3">
+                <label for="instructor" class="form-label admin-label">Giảng viên <span style="color:var(--accent2)">*</span></label>
+                <input type="text" th:field="*{instructor}" class="form-control admin-input" required placeholder="Tên giảng viên">
+                <div class="form-text" style="color:var(--accent2)" th:if="${#fields.hasErrors('instructor')}" th:errors="*{instructor}"></div>
+              </div>
+              <div class="mb-3">
+                <label for="maxStudents" class="form-label admin-label">Sĩ số tối đa <span style="color:var(--accent2)">*</span></label>
+                <input type="number" th:field="*{maxStudents}" class="form-control admin-input" min="1" max="500" required placeholder="Ví dụ: 30">
+                <div class="form-text" style="color:var(--accent2)" th:if="${#fields.hasErrors('maxStudents')}" th:errors="*{maxStudents}"></div>
+              </div>
+              <div class="mb-3">
+                <label for="startDate" class="form-label admin-label">Ngày bắt đầu</label>
+                <input type="date" th:field="*{startDate}" class="form-control admin-input" placeholder="Tùy chọn">
+                <div class="form-text" style="color:var(--accent2)" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}"></div>
+              </div>
+              <div class="mb-3">
+                <label for="imageUrl" class="form-label admin-label">Ảnh khóa học (URL hoặc để trống)</label>
+                <input type="url" th:field="*{imageUrl}" class="form-control admin-input" placeholder="https://... hoặc upload bên dưới">
+                <div class="form-text" style="color:var(--muted)" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
+              </div>
+              <div class="mb-3">
+                <label for="imageFile" class="form-label admin-label">Upload ảnh khóa học</label>
+                <input type="file" name="imageFile" id="imageFile" class="form-control admin-input" accept="image/*">
+                <div class="form-text" style="color:var(--muted)">JPG/PNG/WebP, tối đa 5MB.</div>
+                <div th:if="${course.imageUrl != null && !course.imageUrl.isEmpty()}" class="mt-2">
+                  <img th:src="${course.imageUrl}" alt="Preview" class="img-fluid rounded" style="max-height: 180px; object-fit: cover;">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="durationWeeks" class="form-label admin-label">Thời lượng (tuần)</label>
+                <input type="number" th:field="*{durationWeeks}" class="form-control admin-input" min="1" max="52" placeholder="Ví dụ: 12">
+                <div class="form-text" style="color:var(--accent2)" th:if="${#fields.hasErrors('durationWeeks')}" th:errors="*{durationWeeks}"></div>
+              </div>
+              <div class="mb-4">
+                <label for="price" class="form-label admin-label">Học phí (VNĐ)</label>
+                <input type="number" th:field="*{price}" class="form-control admin-input" min="0" step="1000" placeholder="Để trống nếu miễn phí">
+                <div class="form-text" style="color:var(--accent2)" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="submit" class="admin-btn-primary">Lưu</button>
+                <a th:href="@{/courses}" class="admin-btn-outline">Hủy</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-			<form th:action="@{/courses/save}" th:object="${course}" method="post" class="form-card">
-				<input type="hidden" th:field="*{id}">
-
-				<div class="form-group">
-					<label for="title">Tiêu đề khóa học <span class="required">*</span></label>
-					<input type="text" th:field="*{title}" class="form-input" required placeholder="Nhập tiêu đề khóa học">
-					<div class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
-				</div>
-
-				<div class="form-group">
-					<label for="description">Mô tả</label>
-					<textarea th:field="*{description}" class="form-input" rows="4" placeholder="Mô tả nội dung khóa học"></textarea>
-					<div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
-				</div>
-
-				<div class="form-group">
-					<label for="instructor">Giảng viên <span class="required">*</span></label>
-					<input type="text" th:field="*{instructor}" class="form-input" required placeholder="Tên giảng viên">
-					<div class="error" th:if="${#fields.hasErrors('instructor')}" th:errors="*{instructor}"></div>
-				</div>
-
-				<div class="form-group">
-					<label for="maxStudents">Sĩ số tối đa <span class="required">*</span></label>
-					<input type="number" th:field="*{maxStudents}" class="form-input" min="1" max="500" required placeholder="Ví dụ: 30">
-					<div class="error" th:if="${#fields.hasErrors('maxStudents')}" th:errors="*{maxStudents}"></div>
-				</div>
-
-				<div class="form-actions">
-					<button type="submit" class="btn">Lưu</button>
-					<a th:href="@{/courses}" class="btn btn-outline">Hủy</a>
-				</div>
-			</form>
-		</main>
-
-		<footer>
-			<p>Demo Web · Spring Boot 4 · Java 25</p>
-		</footer>
-	</div>
+  <div th:replace="~{fragments/admin-layout :: scripts}"></div>
 </body>
 </html>

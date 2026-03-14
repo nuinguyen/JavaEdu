@@ -1,10 +1,15 @@
 package com.example.demo.entity;
 
+import com.example.demo.validation.StartDateInFuture;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "courses")
@@ -32,6 +37,29 @@ public class Course {
 	@Max(value = 500, message = "Sĩ số tối đa không được lớn hơn 500")
 	@Column(name = "max_students", nullable = false)
 	private Integer maxStudents;
+
+	@StartDateInFuture
+	@Column(name = "start_date")
+	private LocalDate startDate;
+
+	/** Đường dẫn ảnh (URL hoặc path sau upload). */
+	@Size(max = 500, message = "Đường dẫn ảnh không quá 500 ký tự")
+	@Column(name = "image_url", length = 500)
+	private String imageUrl;
+
+	/** Thời lượng khóa học (số tuần). */
+	@Min(value = 1, message = "Thời lượng ít nhất 1 tuần")
+	@Max(value = 52, message = "Thời lượng không quá 52 tuần")
+	@Column(name = "duration_weeks")
+	private Integer durationWeeks;
+
+	/** Học phí (null = miễn phí hoặc chưa công bố). */
+	@DecimalMin(value = "0", message = "Học phí không được âm")
+	@Column(precision = 12, scale = 2)
+	private BigDecimal price;
+
+	@Column(nullable = false)
+	private boolean deleted = false;
 
 	public Course() {
 	}
@@ -81,6 +109,46 @@ public class Course {
 
 	public void setMaxStudents(Integer maxStudents) {
 		this.maxStudents = maxStudents;
+	}
+
+	public LocalDate getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public Integer getDurationWeeks() {
+		return durationWeeks;
+	}
+
+	public void setDurationWeeks(Integer durationWeeks) {
+		this.durationWeeks = durationWeeks;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 }
 

@@ -38,7 +38,11 @@ public class SecurityConfig {
 			.csrf(csrf -> csrf.ignoringRequestMatchers("/login", "/logout"))
 			.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/login", "/logout", "/css/**", "/js/**", "/error").permitAll()
+				.requestMatchers("/login", "/logout", "/css/**", "/js/**", "/upload/**", "/error").permitAll()
+				.requestMatchers("/catalog").hasAnyRole("ADMIN", "USER")
+				.requestMatchers("/users/**").hasRole("ADMIN")
+				.requestMatchers("/enrollments/**").hasRole("ADMIN")
+				.requestMatchers("/courses/**").hasAnyRole("ADMIN", "USER")
 				.anyRequest().authenticated()
 			)
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

@@ -1,72 +1,64 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title th:text="${title}">Thêm / Sửa User</title>
-	<link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/admin-layout :: head(${title})}"></head>
 <body>
-	<div class="wrap">
-		<nav>
-			<a href="/" class="logo">Demo<span>.</span>Web</a>
-			<ul>
-				<li><a href="/">Trang chủ</a></li>
-				<li><a href="/about">Giới thiệu</a></li>
-				<li><a href="/users" class="active">Danh sách User</a></li>
-				<li><a href="/courses">Khóa học</a></li>
-			</ul>
-		</nav>
+  <div th:replace="~{fragments/admin-layout :: overlay}"></div>
+  <div th:replace="~{fragments/admin-layout :: sidebar('users')}"></div>
 
-		<main>
-			<h1 class="page-title" th:text="${title}">Thêm User</h1>
+  <div id="main">
+    <div th:replace="~{fragments/admin-layout :: topbar(${title})}"></div>
+    <div class="content">
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+          <div class="chart-card">
+            <div class="sec-title mb-3" th:text="${title}">Thêm User</div>
+            <div th:if="${saveError}" class="alert alert-admin-danger py-2 small mb-3" th:text="${saveError}"></div>
+            <form th:action="@{/users/save}" th:object="${user}" method="post">
+              <input type="hidden" th:field="*{id}">
+              <div class="mb-3">
+                <label for="name" class="form-label admin-label">Họ tên <span style="color:var(--accent2)">*</span></label>
+                <input type="text" th:field="*{name}" class="form-control admin-input" required placeholder="Nhập họ tên">
+                <div class="form-text" style="color:var(--accent2)" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+              </div>
+              <div class="mb-3">
+                <label for="username" class="form-label admin-label">Tên đăng nhập <span style="color:var(--accent2)">*</span></label>
+                <input type="text" th:field="*{username}" class="form-control admin-input" required placeholder="3–50 ký tự">
+                <div class="form-text" style="color:var(--accent2)" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label admin-label">Mật khẩu <span th:if="${user.id == null}" style="color:var(--accent2)">*</span></label>
+                <input type="password" th:field="*{password}" class="form-control admin-input" placeholder="Để trống nếu không đổi (khi sửa)">
+                <div class="form-text" style="color:var(--accent2)" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label admin-label">Email</label>
+                <input type="email" th:field="*{email}" class="form-control admin-input" placeholder="email@example.com">
+                <div class="form-text" style="color:var(--accent2)" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+              </div>
+              <div class="mb-3">
+                <label for="role" class="form-label admin-label">Vai trò</label>
+                <select th:field="*{role}" class="form-select admin-input">
+                  <option value="ROLE_USER">User</option>
+                  <option value="ROLE_ADMIN">Admin</option>
+                </select>
+              </div>
+              <div class="mb-4">
+                <div class="form-check">
+                  <input type="checkbox" th:field="*{active}" class="form-check-input" id="active" style="accent-color:var(--accent)">
+                  <label class="form-check-label admin-label" for="active">Đang hoạt động</label>
+                </div>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="submit" class="admin-btn-primary">Lưu</button>
+                <a th:href="@{/users}" class="admin-btn-outline">Hủy</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-			<form th:action="@{/users/save}" th:object="${user}" method="post" class="form-card">
-				<input type="hidden" th:field="*{id}">
-				<div class="form-group">
-					<label for="name">Họ tên <span class="required">*</span></label>
-					<input type="text" th:field="*{name}" class="form-input" required placeholder="Nhập họ tên">
-					<div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-				</div>
-				<div class="form-group">
-					<label for="username">Tên đăng nhập <span class="required">*</span></label>
-					<input type="text" th:field="*{username}" class="form-input" required placeholder="Tên đăng nhập (3–50 ký tự)">
-					<div class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
-				</div>
-				<div class="form-group">
-					<label for="password">Mật khẩu <span th:if="${user.id == null}" class="required">*</span></label>
-					<input type="password" th:field="*{password}" class="form-input" placeholder="Để trống nếu không đổi (khi sửa)">
-					<div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-				</div>
-				<div class="form-group">
-					<label for="email">Email</label>
-					<input type="email" th:field="*{email}" class="form-input" placeholder="email@example.com">
-					<div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-				</div>
-				<div class="form-group">
-					<label for="role">Vai trò</label>
-					<select th:field="*{role}" class="form-input">
-						<option value="ROLE_USER">User</option>
-						<option value="ROLE_ADMIN">Admin</option>
-					</select>
-				</div>
-				<div class="form-group">
-					<label for="active">Trạng thái</label>
-					<label style="display: flex; align-items: center; gap: 0.5rem;">
-						<input type="checkbox" th:field="*{active}">
-						<span>Đang hoạt động</span>
-					</label>
-				</div>
-				<div class="form-actions"> 
-					<button type="submit" class="btn">Lưu</button>
-					<a th:href="@{/users}" class="btn btn-outline">Hủy</a>
-				</div>
-			</form>
-		</main>
-
-		<footer>
-			<p>Demo Web · Spring Boot 4 · Java 25</p>
-		</footer>
-	</div>
+  <div th:replace="~{fragments/admin-layout :: scripts}"></div>
 </body>
 </html>

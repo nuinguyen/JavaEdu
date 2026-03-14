@@ -1,67 +1,238 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title th:text="${title}">Danh sách khóa học</title>
-	<link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:if="${isAdmin}" th:replace="~{fragments/admin-layout :: head(${title})}"></head>
+<head th:unless="${isAdmin}" th:replace="~{fragments/layout :: head(${title})}"></head>
 <body>
-	<div class="wrap">
-		<nav>
-			<a href="/" class="logo">Demo<span>.</span>Web</a>
-			<ul>
-				<li><a href="/">Trang chủ</a></li>
-				<li><a href="/about">Giới thiệu</a></li>
-				<li><a href="/users">Danh sách User</a></li>
-				<li><a href="/courses" class="active">Khóa học</a></li>
-			</ul>
-		</nav>
+  <!-- Admin layout -->
+  <th:block th:if="${isAdmin}">
+    <div th:replace="~{fragments/admin-layout :: overlay}"></div>
+    <div th:replace="~{fragments/admin-layout :: sidebar('courses')}"></div>
+    <div id="main">
+      <div th:replace="~{fragments/admin-layout :: topbar(${title})}"></div>
+      <div class="content">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <div class="sec-title mb-0" style="font-size:1.2rem">Quản lý Khóa học</div>
+            <div style="font-size:.8rem;color:var(--muted)">Bấm Xem để xem chi tiết, Sửa/Xóa để quản lý.</div>
+          </div>
+          <a th:href="@{/courses/new}" class="admin-btn-primary"><i class="bi bi-plus-lg"></i> Thêm khóa học</a>
+        </div>
+        <div th:if="${message}" class="alert alert-admin-success py-2 small mb-3" th:text="${message}"></div>
+        <div class="chart-card mb-3">
+          <form th:action="@{/courses}" method="get" class="row g-2 align-items-center">
+            <div class="col-12 col-md-4">
+              <div style="position:relative">
+                <i class="bi bi-search" style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--muted)"></i>
+                <input type="text" name="q" th:value="${searchKeyword}" placeholder="Tìm theo tiêu đề, giảng viên..." class="form-control admin-input" style="padding-left:2.2rem;border-radius:8px"/>
+              </div>
+            </div>
+            <input type="hidden" name="size" th:value="${coursePage.size}"/>
+            <div class="col-auto"><button type="submit" class="admin-btn-primary">Tìm</button></div>
+          </form>
+        </div>
+        <div th:if="${#lists.isEmpty(courses)}" class="chart-card">
+          <div class="text-center py-5" style="color:var(--muted)">Chưa có khóa học nào. <a th:href="@{/courses/new}" style="color:var(--accent)">Thêm khóa học</a> để bắt đầu.</div>
+        </div>
+        <div th:if="${!#lists.isEmpty(courses)}" class="data-table">
+          <table>
+            <thead>
+              <tr>
+                <th>KHÓA HỌC</th>
+                <th>GIẢNG VIÊN</th>
+                <th>SĨ SỐ / THỜI LƯỢNG</th>
+                <th>HỌC PHÍ</th>
+                <th>TRẠNG THÁI</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="course : ${courses}">
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-sm" style="background:#4f8ef7;font-size:1.2rem">📚</div>
+                    <div>
+                      <a th:href="@{/courses/{id}(id=${course.id})}" style="font-weight:600;font-size:.85rem;color:var(--text);text-decoration:none" th:text="${course.title}">Tiêu đề</a>
+                      <div style="font-size:.72rem;color:var(--muted)">ID: <span th:text="${course.id}"></span></div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div style="font-weight:500;font-size:.8rem" th:text="${course.instructor}">GV</div>
+                </td>
+                <td>
+                  <div style="font-size:.8rem;color:var(--muted)"><span th:text="${course.maxStudents}">30</span> học viên • <span th:text="${course.durationWeeks != null ? course.durationWeeks + ' tuần' : '—'}">—</span></div>
+                </td>
+                <td>
+                  <span class="course-pill" th:styleappend="${course.price == null ? 'background:rgba(79,247,168,.12);color:var(--accent3)' : 'background:rgba(255,255,255,.05);color:var(--text)'}" th:text="${course.price != null ? #numbers.formatDecimal(course.price, 1, 'POINT', 0, 'POINT') + ' ₫' : 'Miễn phí'}">Miễn phí</span>
+                </td>
+                <td><span class="status-badge status-active">Đang mở</span></td>
+                <td>
+                  <div class="d-flex gap-1">
+                    <a th:href="@{/courses/{id}(id=${course.id})}" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem" title="Xem"><i class="bi bi-eye"></i></a>
+                    <a th:href="@{/courses/{id}/edit(id=${course.id})}" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem" title="Sửa"><i class="bi bi-pencil"></i></a>
+                    <form th:action="@{/courses/{id}/delete(id=${course.id})}" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa khóa học này?');">
+                      <button type="submit" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem;border:none" title="Xóa"><i class="bi bi-trash text-danger"></i></button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div th:if="${!#lists.isEmpty(courses) && coursePage.totalPages > 1}" class="d-flex justify-content-between align-items-center mt-3" style="font-size:.85rem;color:var(--muted)">
+          <span>Trang <span th:text="${coursePage.number + 1}">1</span> / <span th:text="${coursePage.totalPages}">1</span> (<span th:text="${coursePage.totalElements}">0</span> khóa học)</span>
+          <span>
+            <a th:if="${!coursePage.first}" th:href="@{/courses(q=${searchKeyword}, page=${coursePage.number - 1}, size=${coursePage.size})}" class="admin-btn-outline me-1">Trước</a>
+            <a th:if="${!coursePage.last}" th:href="@{/courses(q=${searchKeyword}, page=${coursePage.number + 1}, size=${coursePage.size})}" class="admin-btn-outline">Sau</a>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div th:replace="~{fragments/admin-layout :: scripts}"></div>
+  </th:block>
 
-		<main>
-			<div class="page-header">
-				<h1 class="page-title">Danh sách khóa học</h1>
-				<a th:href="@{/courses/new}" class="btn">+ Thêm khóa học</a>
-			</div>
+  <!-- User layout (normal nav) -->
+  <th:block th:unless="${isAdmin}">
+    <!-- Inline dark-theme styles for the user courses page -->
+    <style>
+      :root {
+        --bg: #07080f; --surface: #0f1120; --card: #13152a;
+        --border: rgba(255,255,255,.07); --accent: #5b6ef5;
+        --a2: #f55b9b; --a3: #5bf5b0; --a4: #f5c55b;
+        --text: #e2e5f5; --muted: #5e6480;
+      }
+      body { background: var(--bg) !important; color: var(--text) !important; }
 
-			<div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+      /* Nav overrides */
+      .app-navbar { background: rgba(7,8,15,.88) !important; border-bottom: 1px solid var(--border) !important; box-shadow: none !important; }
+      .app-navbar .navbar-brand { color: var(--text) !important; font-family: 'Syne', sans-serif; font-weight: 800; }
+      .app-navbar .navbar-brand span { color: var(--accent) !important; }
+      .app-navbar .nav-link { color: var(--muted) !important; }
+      .app-navbar .nav-link:hover, .app-navbar .nav-link.active { color: var(--text) !important; background: rgba(91,110,245,.1) !important; }
+      .app-footer { background: var(--surface) !important; border-top: 1px solid var(--border) !important; color: var(--muted) !important; }
 
-			<div th:if="${#lists.isEmpty(courses)}" class="empty-state">
-				<p>Chưa có khóa học nào. <a th:href="@{/courses/new}">Thêm khóa học</a> để bắt đầu.</p>
-			</div>
+      /* Search bar */
+      .search-wrap { position: relative; }
+      .search-wrap .bi-search { position: absolute; left: .9rem; top: 50%; transform: translateY(-50%); color: var(--muted); }
+      .search-wrap input { background: rgba(255,255,255,.05); border: 1px solid var(--border); color: var(--text); padding: .6rem 1rem .6rem 2.5rem; border-radius: 9px; outline: none; font-size: .9rem; width: 100%; }
+      .search-wrap input:focus { border-color: var(--accent); }
+      .search-wrap input::placeholder { color: var(--muted); }
+      .btn-search { background: var(--accent); color: #fff; border: none; padding: .6rem 1.3rem; border-radius: 9px; font-weight: 600; font-size: .88rem; transition: opacity .2s; }
+      .btn-search:hover { opacity: .85; }
 
-			<div th:if="${!#lists.isEmpty(courses)}" class="table-wrap">
-				<table class="user-table">
-					<thead>
-						<tr>
-							<th>ID</th>
-							<th>Tiêu đề</th>
-							<th>Giảng viên</th>
-							<th>Sĩ số tối đa</th>
-							<th>Thao tác</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="course : ${courses}">
-							<td th:text="${course.id}">1</td>
-							<td th:text="${course.title}">Tiêu đề</td>
-							<td th:text="${course.instructor}">Giảng viên</td>
-							<td th:text="${course.maxStudents}">30</td>
-							<td class="actions">
-								<a th:href="@{/courses/{id}/edit(id=${course.id})}" class="btn btn-sm btn-outline">Sửa</a>
-								<form th:action="@{/courses/{id}/delete(id=${course.id})}" method="post" class="inline-form" onsubmit="return confirm('Bạn có chắc muốn xóa khóa học này?');">
-									<button type="submit" class="btn btn-sm btn-danger">Xóa</button>
-								</form>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</main>
+      /* Course cards */
+      .c-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; height: 100%; transition: transform .28s, border-color .28s, box-shadow .28s; }
+      .c-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 20px 55px rgba(0,0,0,.45); }
+      .c-banner { height: 120px; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; position: relative; }
+      .c-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 55%, rgba(0,0,0,.4)); }
+      .c-lang { position: absolute; bottom: 10px; left: 12px; z-index: 1; font-size: .62rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: .18rem .58rem; border-radius: 4px; color: #fff; background: var(--accent); }
+      .c-body { padding: 1.3rem 1.4rem 1.5rem; }
+      .c-badge { font-size: .65rem; font-weight: 500; padding: .18rem .55rem; border-radius: 100px; background: rgba(255,255,255,.06); border: 1px solid var(--border); color: var(--muted); }
+      .c-title { font-family: 'Syne', sans-serif; font-size: 1.02rem; font-weight: 700; margin: .6rem 0 .35rem; line-height: 1.35; color: var(--text); }
+      .c-desc { font-size: .8rem; color: var(--muted); line-height: 1.65; margin-bottom: 1.1rem; }
+      .c-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: .9rem; }
+      .c-price-free { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--a3); }
+      .c-price { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--text); }
+      .btn-enroll-card { background: var(--accent); color: #fff; border: none; padding: .45rem 1.1rem; border-radius: 8px; font-size: .82rem; font-weight: 600; transition: opacity .2s, transform .15s; text-decoration: none; display: inline-block; }
+      .btn-enroll-card:hover { opacity: .85; transform: scale(1.03); color: #fff; }
 
-		<footer>
-			<p>Demo Web · Spring Boot 4 · Java 25</p>
-		</footer>
-	</div>
+      /* Pagination */
+      .page-link-custom { background: rgba(255,255,255,.05); border: 1px solid var(--border); color: var(--text); padding: .4rem .9rem; border-radius: 7px; font-size: .82rem; text-decoration: none; transition: background .2s; }
+      .page-link-custom:hover { background: rgba(91,110,245,.15); color: var(--accent); }
+
+      /* Empty state */
+      .empty-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 4rem; text-align: center; }
+    </style>
+
+    <nav th:replace="~{fragments/layout :: nav('courses', ${isAdmin})}"></nav>
+
+    <main style="padding: 2.5rem 0 4rem">
+      <div class="container">
+
+        <!-- Header -->
+        <div class="mb-5">
+          <div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:.4rem">Danh mục khóa học</div>
+          <h1 style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.5rem">Chọn Khóa Học Phù Hợp</h1>
+          <p style="color:var(--muted);margin-bottom:0">Bấm <strong style="color:var(--text)">Đăng ký</strong> để đăng ký và bắt đầu học ngay.</p>
+        </div>
+
+        <div th:if="${message}" class="mb-3 px-4 py-3" style="background:rgba(91,247,168,.1);border:1px solid rgba(91,247,168,.25);color:var(--a3);border-radius:10px;font-size:.9rem" th:text="${message}"></div>
+
+        <!-- Search -->
+        <form th:action="@{/courses}" method="get" class="d-flex gap-2 mb-5 flex-wrap">
+          <div class="search-wrap" style="flex:1;min-width:220px;max-width:380px">
+            <i class="bi bi-search"></i>
+            <input type="text" name="q" th:value="${searchKeyword}" placeholder="Tìm theo tiêu đề hoặc giảng viên...">
+          </div>
+          <input type="hidden" name="size" th:value="${coursePage.size}">
+          <button type="submit" class="btn-search"><i class="bi bi-search me-1"></i>Tìm</button>
+        </form>
+
+        <!-- Empty -->
+        <div th:if="${#lists.isEmpty(courses)}" class="empty-card">
+          <div style="font-size:3rem;margin-bottom:1rem">📚</div>
+          <div style="font-weight:700;font-size:1.1rem;margin-bottom:.5rem">Chưa có khóa học nào</div>
+          <div style="color:var(--muted);font-size:.88rem">Vui lòng quay lại sau hoặc thử từ khoá tìm kiếm khác.</div>
+        </div>
+
+        <!-- Course cards grid -->
+        <div th:if="${!#lists.isEmpty(courses)}" class="row g-4">
+          <div class="col-12 col-sm-6 col-lg-4" th:each="course, stat : ${courses}">
+            <div class="c-card">
+              <!-- Banner -->
+              <div class="c-banner"
+                th:style="${stat.index % 6 == 0} ? 'background:linear-gradient(135deg,#1a0800,#3d1500)' :
+                           (${stat.index % 6 == 1} ? 'background:linear-gradient(135deg,#000618,#071040)' :
+                           (${stat.index % 6 == 2} ? 'background:linear-gradient(135deg,#181600,#3d3800)' :
+                           (${stat.index % 6 == 3} ? 'background:linear-gradient(135deg,#001018,#002535)' :
+                           (${stat.index % 6 == 4} ? 'background:linear-gradient(135deg,#001608,#003515)' :
+                                                      'background:linear-gradient(135deg,#0c0018,#200035)'))))">
+                <span th:text="${stat.index % 6 == 0} ? '🌐' :
+                               (${stat.index % 6 == 1} ? '🎨' :
+                               (${stat.index % 6 == 2} ? '⚡' :
+                               (${stat.index % 6 == 3} ? '⚛️' :
+                               (${stat.index % 6 == 4} ? '🚀' : '🔥'))))">🌐</span>
+                <span class="c-lang" th:text="${course.instructor}">GV</span>
+              </div>
+
+              <!-- Body -->
+              <div class="c-body">
+                <div class="d-flex gap-1 flex-wrap mb-1">
+                  <span class="c-badge" th:text="${course.durationWeeks != null ? course.durationWeeks + ' tuần' : '—'}">—</span>
+                  <span class="c-badge" th:text="${course.maxStudents} + ' học viên'">30 học viên</span>
+                </div>
+                <div class="c-title" th:text="${course.title}">Tiêu đề</div>
+                <div class="c-desc" th:text="${course.description != null ? course.description : 'Khóa học chất lượng, nội dung thực chiến, bám sát nhu cầu thực tế.'}">Mô tả</div>
+
+                <div class="c-footer">
+                  <div>
+                    <span class="c-price-free" th:if="${course.price == null}">Miễn phí</span>
+                    <span class="c-price" th:if="${course.price != null}" th:text="${#numbers.formatDecimal(course.price, 1, 'POINT', 0, 'POINT') + ' ₫'}">—</span>
+                  </div>
+                  <a th:href="@{/courses/{id}(id=${course.id})}" class="btn-enroll-card">Xem &amp; Đăng ký</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div th:if="${!#lists.isEmpty(courses) && coursePage.totalPages > 1}"
+             class="d-flex justify-content-between align-items-center mt-5">
+          <span style="font-size:.82rem;color:var(--muted)">
+            Trang <span th:text="${coursePage.number + 1}">1</span>/<span th:text="${coursePage.totalPages}">1</span>
+            · <span th:text="${coursePage.totalElements}">0</span> khóa học
+          </span>
+          <div class="d-flex gap-2">
+            <a th:if="${!coursePage.first}" th:href="@{/courses(q=${searchKeyword}, page=${coursePage.number - 1}, size=${coursePage.size})}" class="page-link-custom"><i class="bi bi-arrow-left me-1"></i>Trước</a>
+            <a th:if="${!coursePage.last}"  th:href="@{/courses(q=${searchKeyword}, page=${coursePage.number + 1}, size=${coursePage.size})}" class="page-link-custom">Sau<i class="bi bi-arrow-right ms-1"></i></a>
+          </div>
+        </div>
+
+      </div>
+    </main>
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+  </th:block>
 </body>
 </html>

@@ -59,3 +59,19 @@ Custom Validation: Viết một cái Annotation riêng để kiểm tra "Ngày b
 Global Exception Handling: Viết một lớp @ControllerAdvice để khi có lỗi (ví dụ khóa học không tồn tại), hệ thống sẽ hiện ra một trang báo lỗi đẹp mắt thay vì trang trắng xóa của Java.
 
 Soft Delete: Thay vì xóa hẳn khóa học, hãy dùng một trường boolean deleted. Điều này rất phổ biến trong thực tế.
+
+---
+
+## Lộ trình mở rộng module Khóa học (chuẩn, đầy đủ)
+
+**Bước 1 – Mở rộng dữ liệu khóa học**  
+Entity Course thêm: ảnh (imageUrl), thời lượng (durationWeeks), giá (price). Form + validation, hiển thị ở danh sách và chi tiết.
+
+**Bước 2 – Upload ảnh**  
+Cấu hình Spring Multipart, service lưu file vào thư mục upload, form có input file, lưu đường dẫn vào Course.imageUrl.
+
+**Bước 3 – Giao diện danh sách dạng card**  
+Trang danh sách khóa học dạng lưới card: ảnh, tiêu đề, giá, thời lượng, nút Xem/Đăng ký.
+
+**Bước 4 – Trang chi tiết chuẩn**  
+Ảnh lớn, đầy đủ thông tin (giá, thời lượng, ngày bắt đầu, mô tả), khu vực đăng ký rõ ràng.

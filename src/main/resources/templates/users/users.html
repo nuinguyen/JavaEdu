@@ -1,71 +1,97 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title th:text="${title}">Danh sách User</title>
-	<link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/admin-layout :: head(${title})}"></head>
 <body>
-	<div class="wrap">
-		<nav>
-			<a href="/" class="logo">Demo<span>.</span>Web</a>
-			<ul>
-				<li><a href="/">Trang chủ</a></li>
-				<li><a href="/about">Giới thiệu</a></li>
-				<li><a href="/users" class="active">Danh sách User</a></li>
-				<li><a href="/courses">Khóa học</a></li>
-			</ul>
-		</nav>
+  <div th:replace="~{fragments/admin-layout :: overlay}"></div>
+  <div th:replace="~{fragments/admin-layout :: sidebar('users')}"></div>
 
-		<main>
-			<div class="page-header">
-				<h1 class="page-title">Danh sách User</h1>
-				<a th:href="@{/users/new}" class="btn">+ Thêm user</a>
-			</div>
+  <div id="main">
+    <div th:replace="~{fragments/admin-layout :: topbar(${title})}"></div>
+    <div class="content">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+          <div class="sec-title mb-0" style="font-size:1.2rem">Danh sách User / Học viên</div>
+          <div style="font-size:.8rem;color:var(--muted)" th:text="${userPage.totalElements} + ' user trong hệ thống'">0 user</div>
+        </div>
+        <a th:href="@{/users/new}" class="admin-btn-primary"><i class="bi bi-plus-lg"></i> Thêm user</a>
+      </div>
 
-			<div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+      <div th:if="${message}" class="alert alert-admin-success py-2 small mb-3" th:text="${message}"></div>
 
-			<form th:action="@{/users}" method="get" class="search-form">
-				<input type="text" name="q" th:value="${searchKeyword}" placeholder="Tìm theo tên hoặc email..." class="form-input">
-				<button type="submit" class="btn">Tìm kiếm</button>
-			</form>
+      <div class="chart-card mb-3">
+        <form th:action="@{/users}" method="get" class="row g-2 align-items-center">
+          <div class="col-12 col-md-4">
+            <div style="position:relative">
+              <i class="bi bi-search" style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--muted)"></i>
+              <input type="text" name="q" th:value="${searchKeyword}" placeholder="Tìm theo tên, email..."
+                class="form-control admin-input" style="padding-left:2.2rem;border-radius:8px"/>
+            </div>
+          </div>
+          <input type="hidden" name="size" th:value="${userPage.size}"/>
+          <div class="col-auto">
+            <button type="submit" class="admin-btn-primary">Tìm</button>
+          </div>
+        </form>
+      </div>
 
-			<div th:if="${#lists.isEmpty(users)}" class="empty-state">
-				<p th:if="${searchKeyword != null && !#strings.isEmpty(searchKeyword)}">Không tìm thấy user nào phù hợp với "<span th:text="${searchKeyword}"></span>".</p>
-				<p th:unless="${searchKeyword != null && !#strings.isEmpty(searchKeyword)}">Chưa có user nào. <a th:href="@{/users/new}">Thêm user</a> để bắt đầu.</p>
-			</div>
+      <div th:if="${#lists.isEmpty(users)}" class="chart-card">
+        <div class="text-center py-5" style="color:var(--muted)">
+          <p th:if="${searchKeyword != null && !#strings.isEmpty(searchKeyword)}">Không tìm thấy user nào phù hợp.</p>
+          <p th:unless="${searchKeyword != null && !#strings.isEmpty(searchKeyword)}">Chưa có user nào. <a th:href="@{/users/new}" style="color:var(--accent)">Thêm user</a> để bắt đầu.</p>
+        </div>
+      </div>
 
-			<div th:if="${!#lists.isEmpty(users)}" class="table-wrap">
-				<table class="user-table">
-					<thead>
-						<tr>
-							<th>ID</th>
-							<th>Họ tên</th>
-							<th>Email</th>
-							<th>Thao tác</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="user : ${users}">
-							<td th:text="${user.id}">1</td>
-							<td th:text="${user.name}">Tên</td>
-							<td th:text="${user.email}">email@example.com</td>
-							<td class="actions">
-								<a th:href="@{/users/{id}/edit(id=${user.id})}" class="btn btn-sm btn-outline">Sửa</a>
-								<form th:action="@{/users/{id}/delete(id=${user.id})}" method="post" class="inline-form" onsubmit="return confirm('Bạn có chắc muốn xóa user này?');">
-									<button type="submit" class="btn btn-sm btn-danger">Xóa</button>
-								</form>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</main>
+      <div th:if="${!#lists.isEmpty(users)}" class="data-table">
+        <table>
+          <thead>
+            <tr>
+              <th>HỌC VIÊN</th>
+              <th>KHÓA HỌC</th>
+              <th>TRẠNG THÁI</th>
+              <th>NGÀY ĐĂNG KÝ</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="user : ${users}">
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="avatar-sm" th:style="'background:' + (${user.id} % 2 == 0 ? '#4f8ef7' : '#f74f8e')"
+                       th:text="${#strings.length(user.name) >= 2 ? #strings.substring(user.name, 0, 2) : #strings.substring(user.name, 0, 1)}">AD</div>
+                  <div>
+                    <div style="font-weight:600;font-size:.82rem" th:text="${user.name}">Tên</div>
+                    <div style="font-size:.72rem;color:var(--muted)" th:text="${user.email}">email@example.com</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="course-pill" style="background:#444;color:#fff" th:text="${user.role != null ? user.role : 'USER'}">USER</span>
+              </td>
+              <td><span class="status-badge" th:classappend="${user.enabled != false} ? 'status-active' : 'status-inactive'" th:text="${user.enabled != false ? 'Hoạt động' : 'Ngừng'}">Hoạt động</span></td>
+              <td style="color:var(--muted);font-size:.8rem">—</td>
+              <td>
+                <div class="d-flex gap-1">
+                  <a th:href="@{/users/{id}/edit(id=${user.id})}" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem" title="Sửa"><i class="bi bi-pencil"></i></a>
+                  <form th:action="@{/users/{id}/delete(id=${user.id})}" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa user này?');">
+                    <button type="submit" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem;border:none" title="Xóa"><i class="bi bi-trash text-danger"></i></button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-		<footer>
-			<p>Demo Web · Spring Boot 4 · Java 25</p>
-		</footer>
-	</div>
+      <div th:if="${!#lists.isEmpty(users) && userPage.totalPages > 1}" class="d-flex justify-content-between align-items-center mt-3" style="font-size:.85rem;color:var(--muted)">
+        <span>Trang <span th:text="${userPage.number + 1}">1</span> / <span th:text="${userPage.totalPages}">1</span> (<span th:text="${userPage.totalElements}">0</span> user)</span>
+        <span>
+          <a th:if="${!userPage.first}" th:href="@{/users(q=${searchKeyword}, page=${userPage.number - 1}, size=${userPage.size})}" class="admin-btn-outline me-1">Trước</a>
+          <a th:if="${!userPage.last}" th:href="@{/users(q=${searchKeyword}, page=${userPage.number + 1}, size=${userPage.size})}" class="admin-btn-outline">Sau</a>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div th:replace="~{fragments/admin-layout :: scripts}"></div>
 </body>
 </html>

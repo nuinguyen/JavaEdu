@@ -291,3 +291,44 @@ private final UserRepository userRepository;//biến hằng số của interface
 // @NoArgsConstructor // Tự tạo Constructor không tham số
 // @AllArgsConstructor // Tự tạo Constructor đủ tham số
 ?>
+
+<!-- Gemini đã nói
+Nhìn vào các dependency này, có vẻ như bạn đang xây dựng hệ thống Xác thực (Authentication) và Phân quyền (Authorization) cho một ứng dụng Spring Boot sử dụng cơ chế JWT (JSON Web Token).
+
+Đây là bộ "vũ khí" tiêu chuẩn để làm API Security hiện nay. Dưới đây là vai trò của từng món:
+
+1. Spring Boot Starter Security
+Đây là thư viện nền tảng của Spring để bảo vệ ứng dụng. Khi thêm cái này vào:
+
+Mặc định: Mọi request đến API của bạn sẽ bị chặn lại và yêu cầu đăng nhập.
+
+Tính năng: Cung cấp các bộ lọc (Filters) để kiểm tra User, Role, và bảo vệ chống lại các cuộc tấn công như CSRF.
+
+2. Bộ thư viện JJWT (io.jsonwebtoken)
+Spring Security mặc định dùng Session/Cookie, nhưng để làm việc với hệ thống Stateless (không lưu trạng thái trên server) như Mobile App hay React/Angular, bạn cần JWT. Bạn đang dùng phiên bản 0.12.6 (một phiên bản khá mới với cú pháp Fluent API).
+
+jjwt-api: Chứa các interface và class cốt lõi để bạn gọi lệnh tạo token, giải mã token (như Jwts.builder()).
+
+jjwt-impl: Chứa các logic triển khai thực tế của thuật toán mã hóa. Nó để ở scope: runtime vì code của bạn chỉ cần gọi qua API, còn lúc chạy thực tế thì JVM mới cần nạp phần logic này.
+
+jjwt-jackson: Giúp thư viện JWT hiểu và chuyển đổi (serialize/deserialize) dữ liệu JSON bằng thư viện Jackson quen thuộc của Spring.
+
+Luồng hoạt động cơ bản (JWT Workflow)
+Login: User gửi username/password.
+
+Generate: Server kiểm tra đúng thì dùng JJWT tạo ra một chuỗi Token (chứa ID, Role...).
+
+Response: Server trả Token này về cho Client.
+
+Authorize: Ở các request sau, Client gửi Token này lên header Authorization: Bearer <token>.
+
+Validate: Spring Security dùng JJWT để giải mã, nếu Token hợp lệ và chưa hết hạn thì mới cho phép truy cập dữ liệu.
+
+Một lưu ý nhỏ cho bản 0.12.x
+Vì bạn đang dùng bản 0.12.6, cú pháp sẽ hơi khác so với các bài hướng dẫn cũ (bản 0.9.x). Ví dụ, khi tạo key, bạn sẽ dùng:
+
+Java
+SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretString));
+Thay vì các phương thức cũ đã bị đánh dấu @Deprecated. -->
+
+

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/admin-layout :: head(${title})}"></head>
+<body>
+  <div th:replace="~{fragments/admin-layout :: overlay}"></div>
+  <div th:replace="~{fragments/admin-layout :: sidebar('enrollments')}"></div>
+
+  <div id="main">
+    <div th:replace="~{fragments/admin-layout :: topbar(${title})}"></div>
+    <div class="content">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="sec-title mb-0" style="font-size:1.2rem">Quản lý đăng ký</div>
+        <a th:href="@{/courses}" class="admin-btn-outline"><i class="bi bi-arrow-left me-1"></i>Khóa học</a>
+      </div>
+
+      <div th:if="${message}" class="alert alert-admin-success py-2 small mb-3" th:text="${message}"></div>
+
+      <div th:if="${#lists.isEmpty(enrollments)}" class="chart-card">
+        <div class="text-center py-5" style="color:var(--muted)">Chưa có đăng ký nào.</div>
+      </div>
+
+      <div th:if="${!#lists.isEmpty(enrollments)}" class="data-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Khóa học</th>
+              <th>Học viên</th>
+              <th>Email</th>
+              <th>Ngày đăng ký</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="e : ${enrollments}">
+              <td><a th:href="@{/courses/{id}(id=${e.course.id})}" th:text="${e.course.title}" style="color:var(--accent);text-decoration:none"></a></td>
+              <td th:text="${e.user.name}">Tên</td>
+              <td th:text="${e.user.email}">email</td>
+              <td th:text="${#temporals.format(e.enrollDate, 'dd/MM/yyyy HH:mm')}" style="color:var(--muted);font-size:.8rem">Ngày</td>
+              <td>
+                <span th:if="${e.status == 'PENDING'}" class="status-badge status-pending">Chờ duyệt</span>
+                <span th:if="${e.status == 'APPROVED'}" class="status-badge status-approved">Đã duyệt</span>
+              </td>
+              <td>
+                <th:block th:if="${e.status == 'PENDING'}">
+                  <form th:action="@{/enrollments/{id}/approve(id=${e.id})}" method="post" class="d-inline">
+                    <button type="submit" class="admin-btn-primary me-1" style="padding:.35rem .7rem;font-size:.8rem">Duyệt</button>
+                  </form>
+                  <form th:action="@{/enrollments/{id}/reject(id=${e.id})}" method="post" class="d-inline" onsubmit="return confirm('Từ chối đăng ký này?');">
+                    <button type="submit" class="admin-btn-danger" style="padding:.35rem .7rem;font-size:.8rem">Từ chối</button>
+                  </form>
+                </th:block>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div th:if="${!#lists.isEmpty(enrollments) && enrollmentPage.totalPages > 1}" class="d-flex justify-content-between align-items-center mt-3" style="font-size:.85rem;color:var(--muted)">
+        <span>Trang <span th:text="${enrollmentPage.number + 1}">1</span> / <span th:text="${enrollmentPage.totalPages}">1</span></span>
+        <span>
+          <a th:if="${!enrollmentPage.first}" th:href="@{/enrollments(page=${enrollmentPage.number - 1}, size=${enrollmentPage.size})}" class="admin-btn-outline me-1">Trước</a>
+          <a th:if="${!enrollmentPage.last}" th:href="@{/enrollments(page=${enrollmentPage.number + 1}, size=${enrollmentPage.size})}" class="admin-btn-outline">Sau</a>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div th:replace="~{fragments/admin-layout :: scripts}"></div>
+</body>
+</html>

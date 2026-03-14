@@ -1,47 +1,40 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title th:text="${title}">Đăng nhập</title>
-	<link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/layout :: head(${title})}"></head>
 <body>
-	<div class="wrap">
-		<nav>
-			<a href="/" class="logo">Demo<span>.</span>Web</a>
-			<ul>
-				<li><a href="/login" class="active">Đăng nhập</a></li>
-			</ul>
-		</nav>
+	<nav th:replace="~{fragments/layout :: nav('login', false)}"></nav>
 
-		<main>
-			<h1 class="page-title">Đăng nhập</h1>
+	<main>
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-md-5 col-lg-4">
+					<div class="app-card">
+						<div class="card-body p-4">
+							<h2 class="page-heading mb-4">Đăng nhập</h2>
 
-			<div th:if="${param.error}" class="alert alert-danger">
-				Tên đăng nhập hoặc mật khẩu không đúng.
+							<div th:if="${param.error}" class="alert alert-danger py-2 small mb-3">
+								Tên đăng nhập hoặc mật khẩu không đúng.
+							</div>
+
+							<form th:action="@{/login}" method="post">
+								<div class="mb-3">
+									<label for="username" class="form-label fw-semibold">Tên đăng nhập</label>
+									<input type="text" id="username" name="username" class="form-control" required placeholder="Nhập tên đăng nhập" autofocus>
+								</div>
+								<div class="mb-4">
+									<label for="password" class="form-label fw-semibold">Mật khẩu</label>
+									<input type="password" id="password" name="password" class="form-control" required placeholder="Nhập mật khẩu">
+								</div>
+								<button type="submit" class="btn btn-app-primary w-100">Đăng nhập</button>
+							</form>
+						</div>
+					</div>
+				</div>
 			</div>
+		</div>
+	</main>
 
-			<form th:action="@{/login}" method="post" class="form-card" style="max-width: 400px;">
-				<div class="form-group">
-					<label for="username">Tên đăng nhập</label>
-					<input type="text" id="username" name="username" class="form-input" required
-						   placeholder="Nhập tên đăng nhập" autofocus>
-				</div>
-				<div class="form-group">
-					<label for="password">Mật khẩu</label>
-					<input type="password" id="password" name="password" class="form-input" required
-						   placeholder="Nhập mật khẩu">
-				</div>
-				<div class="form-actions">
-					<button type="submit" class="btn">Đăng nhập</button>
-				</div>
-			</form>
-		</main>
-
-		<footer>
-			<p>Demo Web · Spring Boot 4 · Java 25</p>
-		</footer>
-	</div>
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
+	<div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

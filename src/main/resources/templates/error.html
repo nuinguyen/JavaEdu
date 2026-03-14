@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/layout :: head(${title})}"></head>
+<body>
+	<nav th:replace="~{fragments/layout :: nav('home', false)}"></nav>
+
+	<main>
+		<div class="container">
+			<div class="row justify-content-center py-5">
+				<div class="col-md-6 text-center">
+					<div class="app-card">
+						<div class="card-body p-5">
+							<div class="display-4 text-primary mb-3">
+								<i class="bi bi-exclamation-triangle"></i>
+							</div>
+							<h1 class="h4 fw-bold mb-2" th:text="${title}">Không tìm thấy</h1>
+							<p class="text-secondary mb-4" th:text="${message}">Tài nguyên không tồn tại.</p>
+							<p class="small text-muted mb-4">Mã lỗi: <span th:text="${statusCode}">404</span></p>
+							<a href="/" class="btn btn-app-primary me-2">Về trang chủ</a>
+							<a href="javascript:history.back()" class="btn btn-app-outline">Quay lại</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
+	<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
