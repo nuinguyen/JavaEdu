@@ -10,7 +10,7 @@
     <div class="content">
       <div class="d-flex align-items-center justify-content-between mb-3">
         <div class="sec-title mb-0" style="font-size:1.2rem">Quản lý đăng ký</div>
-        <a th:href="@{/courses}" class="admin-btn-outline"><i class="bi bi-arrow-left me-1"></i>Khóa học</a>
+        <a th:href="@{/admin/courses}" class="admin-btn-outline"><i class="bi bi-arrow-left me-1"></i>Khóa học</a>
       </div>
 
       <div th:if="${message}" class="alert alert-admin-success py-2 small mb-3" th:text="${message}"></div>
@@ -43,10 +43,10 @@
               </td>
               <td>
                 <th:block th:if="${e.status == 'PENDING'}">
-                  <form th:action="@{/enrollments/{id}/approve(id=${e.id})}" method="post" class="d-inline">
+                  <form th:action="@{/admin/enrollments/{id}/approve(id=${e.id})}" method="post" class="d-inline">
                     <button type="submit" class="admin-btn-primary me-1" style="padding:.35rem .7rem;font-size:.8rem">Duyệt</button>
                   </form>
-                  <form th:action="@{/enrollments/{id}/reject(id=${e.id})}" method="post" class="d-inline" onsubmit="return confirm('Từ chối đăng ký này?');">
+                  <form th:action="@{/admin/enrollments/{id}/reject(id=${e.id})}" method="post" class="d-inline" onsubmit="return confirm('Từ chối đăng ký này?');">
                     <button type="submit" class="admin-btn-danger" style="padding:.35rem .7rem;font-size:.8rem">Từ chối</button>
                   </form>
                 </th:block>
@@ -59,8 +59,8 @@
       <div th:if="${!#lists.isEmpty(enrollments) && enrollmentPage.totalPages > 1}" class="d-flex justify-content-between align-items-center mt-3" style="font-size:.85rem;color:var(--muted)">
         <span>Trang <span th:text="${enrollmentPage.number + 1}">1</span> / <span th:text="${enrollmentPage.totalPages}">1</span></span>
         <span>
-          <a th:if="${!enrollmentPage.first}" th:href="@{/enrollments(page=${enrollmentPage.number - 1}, size=${enrollmentPage.size})}" class="admin-btn-outline me-1">Trước</a>
-          <a th:if="${!enrollmentPage.last}" th:href="@{/enrollments(page=${enrollmentPage.number + 1}, size=${enrollmentPage.size})}" class="admin-btn-outline">Sau</a>
+          <a th:if="${!enrollmentPage.first}" th:href="@{/admin/enrollments(page=${enrollmentPage.number - 1}, size=${enrollmentPage.size})}" class="admin-btn-outline me-1">Trước</a>
+          <a th:if="${!enrollmentPage.last}" th:href="@{/admin/enrollments(page=${enrollmentPage.number + 1}, size=${enrollmentPage.size})}" class="admin-btn-outline">Sau</a>
         </span>
       </div>
     </div>

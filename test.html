@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DevAcademy – Đăng Ký Khóa Học</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --bg:      #07080f;
+      --surface: #0f1120;
+      --card:    #13152a;
+      --border:  rgba(255,255,255,.07);
+      --accent:  #5b6ef5;
+      --a2:      #f55b9b;
+      --a3:      #5bf5b0;
+      --a4:      #f5c55b;
+      --text:    #e2e5f5;
+      --muted:   #5e6480;
+      --html:    #e8572a;
+      --css:     #2965d6;
+      --js:      #efd81d;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE ── */
+    body::after {
+      content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+    }
+
+    /* ── NAV ── */
+    .navbar { border-bottom: 1px solid var(--border); backdrop-filter: blur(14px); }
+    .navbar-brand {
+      font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800;
+      color: var(--text) !important; letter-spacing: -.02em;
+    }
+    .navbar-brand span { color: var(--accent); }
+    .nav-link { color: var(--muted) !important; font-size: .88rem; transition: color .2s; }
+    .nav-link:hover { color: var(--text) !important; }
+    .btn-enroll {
+      background: var(--accent); color: #fff !important;
+      padding: .42rem 1.15rem !important; border-radius: 7px;
+      font-size: .85rem; font-weight: 600;
+      transition: opacity .2s, transform .2s;
+    }
+    .btn-enroll:hover { opacity: .85; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      padding: 5.5rem 0 4rem;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero-blob {
+      position: absolute; border-radius: 50%; filter: blur(90px);
+      pointer-events: none; z-index: 0;
+    }
+    .blob-l { width: 500px; height: 500px; background: var(--accent); opacity: .13; top: -160px; left: -120px; }
+    .blob-r { width: 420px; height: 420px; background: var(--a2);    opacity: .11; top:  -80px; right: -100px; }
+    .hero > * { position: relative; z-index: 1; }
+
+    .hero-chip {
+      display: inline-flex; align-items: center; gap: .45rem;
+      background: rgba(91,110,245,.12); border: 1px solid rgba(91,110,245,.3);
+      color: var(--accent); font-size: .75rem; font-weight: 600;
+      padding: .3rem .9rem; border-radius: 100px;
+      letter-spacing: .07em; text-transform: uppercase; margin-bottom: 1.6rem;
+    }
+    .chip-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: blink 1.6s infinite; }
+    @keyframes blink { 0%,100%{opacity:1}50%{opacity:.25} }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+      font-weight: 800; line-height: 1.08; letter-spacing: -.03em;
+      max-width: 820px; margin: 0 auto 1.2rem;
+    }
+    .grad { background: linear-gradient(135deg, var(--accent), var(--a2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { color: var(--muted); font-size: 1.05rem; max-width: 500px; margin: 0 auto 2.5rem; line-height: 1.75; }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: flex; justify-content: center; gap: 3rem;
+      flex-wrap: wrap; padding: .5rem 0 3.5rem;
+    }
+    .stat-item { text-align: center; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: 1.9rem; font-weight: 800; }
+    .stat-lbl { font-size: .75rem; color: var(--muted); margin-top: .15rem; }
+
+    /* ── SECTION ── */
+    .section-label {
+      font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--accent); font-weight: 600; margin-bottom: .35rem;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif; font-size: 1.9rem;
+      font-weight: 800; letter-spacing: -.02em; margin-bottom: 2rem;
+    }
+
+    /* ── COURSE CARDS ── */
+    .course-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      transition: transform .28s, border-color .28s, box-shadow .28s;
+      height: 100%;
+    }
+    .course-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+      box-shadow: 0 20px 55px rgba(0,0,0,.45);
+    }
+
+    .card-banner {
+      height: 118px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; position: relative;
+    }
+    .banner-html { background: linear-gradient(135deg,#1a0800,#3d1500); }
+    .banner-css  { background: linear-gradient(135deg,#000618,#071040); }
+    .banner-js   { background: linear-gradient(135deg,#181600,#3d3800); }
+    .banner-react{ background: linear-gradient(135deg,#001018,#002535); }
+    .banner-node { background: linear-gradient(135deg,#001608,#003515); }
+    .banner-full { background: linear-gradient(135deg,#0c0018,#200035); }
+    .card-banner::after {
+      content:''; position:absolute; inset:0;
+      background: linear-gradient(to bottom,transparent 55%,rgba(0,0,0,.45));
+    }
+
+    .lang-pill {
+      position: absolute; bottom: 10px; left: 12px; z-index: 1;
+      font-size: .62rem; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase; padding: .18rem .58rem; border-radius: 4px;
+    }
+    .pill-html  { background: var(--html); color: #fff; }
+    .pill-css   { background: var(--css);  color: #fff; }
+    .pill-js    { background: var(--js);   color: #000; }
+    .pill-react { background: #61dafb; color: #000; }
+    .pill-node  { background: #3c873a; color: #fff; }
+    .pill-full  { background: var(--accent); color: #fff; }
+
+    .card-body-inner { padding: 1.2rem 1.3rem 1.5rem; }
+
+    .card-tags .badge {
+      background: rgba(255,255,255,.06) !important;
+      color: var(--muted) !important;
+      font-size: .66rem; font-weight: 500; border-radius: 100px;
+      border: 1px solid var(--border);
+    }
+    .card-title-text {
+      font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+      margin: .6rem 0 .4rem; line-height: 1.3;
+    }
+    .card-desc { font-size: .8rem; color: var(--muted); line-height: 1.6; margin-bottom: 1.1rem; }
+
+    .card-footer-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid var(--border); padding-top: .9rem;
+    }
+    .price-main {
+      font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 800;
+    }
+    .price-old { font-size: .75rem; color: var(--muted); text-decoration: line-through; margin-left: .35rem; }
+    .price-free { color: var(--a3); }
+
+    .btn-pick {
+      background: var(--accent); color: #fff;
+      border: none; padding: .45rem 1.1rem; border-radius: 7px;
+      font-size: .8rem; font-weight: 600;
+      transition: opacity .2s, transform .15s; cursor: pointer;
+    }
+    .btn-pick:hover { opacity: .85; transform: scale(1.03); }
+
+    /* ── FORM SECTION ── */
+    .form-section {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 5rem 0;
+    }
+
+    .form-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 2.5rem;
+    }
+
+    .form-label { font-size: .78rem; font-weight: 600; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; }
+
+    .form-control, .form-select {
+      background: rgba(255,255,255,.04) !important;
+      border: 1px solid var(--border) !important;
+      color: var(--text) !important;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .9rem; border-radius: 9px !important;
+      padding: .7rem 1rem;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px rgba(91,110,245,.18) !important;
+    }
+    .form-control::placeholder { color: var(--muted) !important; }
+    .form-select option { background: #13152a; }
+    textarea.form-control { resize: vertical; min-height: 85px; }
+
+    /* ── CHECKBOX PICKS ── */
+    .pick-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: .65rem;
+    }
+    .pick-item {
+      display: flex; align-items: center; gap: .55rem;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-radius: 9px; padding: .6rem .8rem;
+      cursor: pointer; transition: border-color .2s, background .2s;
+    }
+    .pick-item:has(input:checked) {
+      border-color: var(--accent);
+      background: rgba(91,110,245,.1);
+    }
+    .pick-item input[type=checkbox] {
+      accent-color: var(--accent); width: 15px; height: 15px; flex-shrink: 0;
+    }
+    .pick-item span { font-size: .8rem; font-weight: 500; }
+
+    /* ── SUBMIT ── */
+    .btn-submit {
+      background: linear-gradient(135deg, var(--accent), #4250d4);
+      color: #fff; border: none;
+      font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+      padding: .9rem 2.6rem; border-radius: 10px;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 0 30px rgba(91,110,245,.35);
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 0 45px rgba(91,110,245,.55); }
+
+    /* ── TOAST ── */
+    .toast-custom {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;
+      background: #111420; border: 1px solid var(--a3);
+      color: var(--a3); padding: 1rem 1.4rem;
+      border-radius: 12px; font-size: .88rem;
+      display: flex; align-items: center; gap: .6rem;
+      box-shadow: 0 16px 45px rgba(0,0,0,.5);
+      opacity: 0; transform: translateY(18px);
+      transition: opacity .35s, transform .35s;
+      pointer-events: none;
+    }
+    .toast-custom.show { opacity: 1; transform: none; }
+
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid var(--border); padding: 2rem 0; text-align: center; }
+
+    /* ── DIVIDER ── */
+    hr.dark { border-color: var(--border); }
+
+    /* ── FADE IN ── */
+    .fade-up { opacity: 0; transform: translateY(22px); transition: opacity .55s ease, transform .55s ease; }
+    .fade-up.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar navbar-expand-lg sticky-top" style="background:rgba(7,8,15,.88)">
+  <div class="container">
+    <a class="navbar-brand" href="#">dev<span>Academy</span></a>
+    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+      style="color:var(--muted)">
+      <i class="bi bi-list fs-4"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1 py-2 py-lg-0">
+        <li class="nav-item"><a class="nav-link px-3" href="#">Trang chủ</a></li>
+        <li class="nav-item"><a class="nav-link px-3" href="#courses">Khóa học</a></li>
+        <li class="nav-item"><a class="nav-link px-3" href="#">Blog</a></li>
+        <li class="nav-item ms-lg-2">
+          <a class="nav-link btn-enroll" href="#register">Đăng ký ngay</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-blob blob-l"></div>
+  <div class="hero-blob blob-r"></div>
+
+  <div class="container">
+    <div class="hero-chip"><span class="chip-dot"></span>Nền tảng học lập trình web #1</div>
+
+    <h1>Học <span class="grad">HTML · CSS · JS</span><br>Từ Số 0 Đến Có Việc</h1>
+
+    <p>Khóa học thực chiến, bám sát thực tế doanh nghiệp. Mentor đồng hành, lộ trình rõ ràng — bạn chỉ cần học.</p>
+
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a href="#courses" class="btn px-4 py-2 fw-bold"
+        style="background:linear-gradient(135deg,var(--accent),#4250d4);color:#fff;border-radius:9px;box-shadow:0 0 28px rgba(91,110,245,.4);font-family:'Syne',sans-serif">
+        Khám phá khóa học →
+      </a>
+      <a href="#register" class="btn px-4 py-2"
+        style="background:transparent;color:var(--text);border:1px solid var(--border);border-radius:9px;font-family:'Syne',sans-serif;font-weight:600">
+        Đăng ký miễn phí
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS ── -->
+<div class="container fade-up">
+  <hr class="dark mb-4"/>
+  <div class="stats-row">
+    <div class="stat-item"><div class="stat-num">12,400<span style="color:var(--accent)">+</span></div><div class="stat-lbl">Học viên tốt nghiệp</div></div>
+    <div class="stat-item"><div class="stat-num">48</div><div class="stat-lbl">Khóa học chất lượng</div></div>
+    <div class="stat-item"><div class="stat-num">96<span style="color:var(--a3)">%</span></div><div class="stat-lbl">Học viên hài lòng</div></div>
+    <div class="stat-item"><div class="stat-num">4.9<span style="color:var(--a4)">★</span></div><div class="stat-lbl">Đánh giá trung bình</div></div>
+  </div>
+  <hr class="dark mt-0 mb-5"/>
+</div>
+
+<!-- ── COURSES ── -->
+<section class="py-5" id="courses">
+  <div class="container">
+    <div class="text-center fade-up mb-5">
+      <div class="section-label">Danh mục khóa học</div>
+      <div class="section-title">Chọn khóa học phù hợp với bạn</div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="d-flex justify-content-center gap-2 flex-wrap mb-4 fade-up">
+      <button class="btn btn-sm filter-tab active" data-filter="all">Tất cả</button>
+      <button class="btn btn-sm filter-tab" data-filter="basic">Cơ bản</button>
+      <button class="btn btn-sm filter-tab" data-filter="mid">Trung cấp</button>
+      <button class="btn btn-sm filter-tab" data-filter="adv">Nâng cao</button>
+    </div>
+
+    <div class="row g-4" id="courseGrid">
+
+      <!-- HTML -->
+      <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-level="basic">
+        <div class="course-card">
+          <div class="card-banner banner-html">🌐<span class="lang-pill pill-html">HTML5</span></div>
+          <div class="card-body-inner">
+            <div class="card-tags mb-1 d-flex gap-1 flex-wrap">
+              <span class="badge">Cơ bản</span><span class="badge">20 bài</span><span class="badge">8 giờ</span>
+            </div>
+            <div class="card-title-text">HTML5 Toàn Tập – Nền Tảng Web</div>
+            <div class="card-desc">Cấu trúc trang, semantic tags, forms, SEO cơ bản. Lý tưởng cho người mới bắt đầu.</div>
+            <div class="card-footer-inner">
+              <div><span class="price-main price-free">Miễn phí</span></div>
+              <button class="btn-pick" onclick="pickCourse('HTML5 Toàn Tập')">Đăng ký</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CSS -->
+      <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-level="mid">
+        <div class="course-card">
+          <div class="card-banner banner-css">🎨<span class="lang-pill pill-css">CSS3</span></div>
+          <div class="card-body-inner">
+            <div class="card-tags mb-1 d-flex gap-1 flex-wrap">
+              <span class="badge">Trung cấp</span><span class="badge">32 bài</span><span class="badge">14 giờ</span>
+            </div>
+            <div class="card-title-text">CSS3 & Flexbox / Grid Mastery</div>
+            <div class="card-desc">Layout hiện đại, responsive design, animations và CSS Variables nâng cao.</div>
+            <div class="card-footer-inner">
+              <div><span class="price-main">499k</span><span class="price-old">990k</span></div>
+              <button class="btn-pick" onclick="pickCourse('CSS3 & Flexbox/Grid')">Đăng ký</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JS -->
+      <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-level="mid">
+        <div class="course-card">
+          <div class="card-banner banner-js">⚡<span class="lang-pill pill-js">JavaScript</span></div>
+          <div class="card-body-inner">
+            <div class="card-tags mb-1 d-flex gap-1 flex-wrap">
+              <span class="badge">Trung cấp</span><span class="badge">50 bài</span><span class="badge">22 giờ</span>
+            </div>
+            <div class="card-title-text">JavaScript ES6+ Thực Chiến</div>
+            <div class="card-desc">DOM, async/await, Fetch API, module, closure — xây dựng mini-projects thực tế.</div>
+            <div class="card-footer-inner">
+              <div><span class="price-main">799k</span><span class="price-old">1.5tr</span></div>
+              <button class="btn-pick" onclick="pickCourse('JavaScript ES6+')">Đăng ký</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- React -->
+      <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-level="adv">
+        <div class="course-card">
+          <div class="card-banner banner-react">⚛️<span class="lang-pill pill-react">React</span></div>
+          <div class="card-body-inner">
+            <div class="card-tags mb-1 d-flex gap-1 flex-wrap">
+              <span class="badge">Nâng cao</span><span class="badge">45 bài</span><span class="badge">20 giờ</span>
+            </div>
+            <div class="card-title-text">React 18 – Xây Dựng SPA Hiện Đại</div>
+            <div class="card-desc">Hooks, Context, React Router, tích hợp API và deploy lên Vercel.</div>
+            <div class="card-footer-inner">
+              <div><span class="price-main">1.2tr</span><span class="price-old">2.4tr</span></div>
+              <button class="btn-pick" onclick="pickCourse('React 18')">Đăng ký</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Node -->
+      <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-level="adv">
+        <div class="course-card">
+          <div class="card-banner banner-node">🚀<span class="lang-pill pill-node">Node.js</span></div>
+          <div class="card-body-inner">
+            <div class="card-tags mb-1 d-flex gap-1 flex-wrap">
+              <span class="badge">Nâng cao</span><span class="badge">38 bài</span><span class="badge">18 giờ</span>
+            </div>
+            <div class="card-title-text">Node.js & Express – Backend Từ Đầu</div>
+            <div class="card-desc">REST API, JWT, MongoDB, tối ưu hiệu suất và deploy lên Railway/Render.</div>
+            <div class="card-footer-inner">
+              <div><span class="price-main">1.1tr</span><span class="price-old">2.2tr</span></div>
+              <button class="btn-pick" onclick="pickCourse('Node.js & Express')">Đăng ký</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fullstack -->
+      <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-level="adv">
+        <div class="course-card" style="border-color:rgba(91,110,245,.35)">
+          <div class="card-banner banner-full">🔥<span class="lang-pill pill-full">Full-Stack</span></div>
+          <div class="card-body-inner">
+            <div class="card-tags mb-1 d-flex gap-1 flex-wrap">
+              <span class="badge">Combo</span><span class="badge">130 bài</span><span class="badge">60 giờ</span>
+              <span class="badge" style="background:rgba(91,110,245,.18)!important;color:var(--accent)!important;border-color:rgba(91,110,245,.3)!important">🔥 Hot</span>
+            </div>
+            <div class="card-title-text">Full-Stack Web Developer Bootcamp</div>
+            <div class="card-desc">HTML → CSS → JS → React → Node trong một lộ trình tiết kiệm nhất.</div>
+            <div class="card-footer-inner">
+              <div><span class="price-main">2.5tr</span><span class="price-old">6.5tr</span></div>
+              <button class="btn-pick" onclick="pickCourse('Full-Stack Bootcamp')">Đăng ký</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /row -->
+  </div>
+</section>
+
+<!-- ── REGISTRATION FORM ── -->
+<section class="form-section" id="register">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-9 col-xl-8">
+
+        <div class="text-center mb-4 fade-up">
+          <div class="section-label">Bắt đầu ngay hôm nay</div>
+          <div class="section-title mb-1">Đăng ký khóa học</div>
+          <p style="color:var(--muted);font-size:.9rem">Điền thông tin — chúng tôi sẽ liên hệ trong vòng 24 giờ.</p>
+        </div>
+
+        <div class="form-box fade-up">
+          <form id="regForm" novalidate>
+
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label">Họ và tên <span style="color:var(--a2)">*</span></label>
+                <input type="text" class="form-control" id="fname" placeholder="Nguyễn Văn A" required/>
+                <div class="invalid-feedback" style="font-size:.75rem">Vui lòng nhập họ tên.</div>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">Số điện thoại <span style="color:var(--a2)">*</span></label>
+                <input type="tel" class="form-control" id="phone" placeholder="0912 345 678" required/>
+                <div class="invalid-feedback" style="font-size:.75rem">Vui lòng nhập số điện thoại.</div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Email <span style="color:var(--a2)">*</span></label>
+              <input type="email" class="form-control" id="email" placeholder="example@gmail.com" required/>
+              <div class="invalid-feedback" style="font-size:.75rem">Email không hợp lệ.</div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label">Trình độ hiện tại</label>
+                <select class="form-select" id="level">
+                  <option value="">-- Chọn trình độ --</option>
+                  <option>Hoàn toàn mới bắt đầu</option>
+                  <option>Biết cơ bản HTML/CSS</option>
+                  <option>Đã biết JavaScript</option>
+                  <option>Có kinh nghiệm frontend</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">Mục tiêu học</label>
+                <select class="form-select" id="goal">
+                  <option value="">-- Chọn mục tiêu --</option>
+                  <option>Tìm việc làm lập trình viên</option>
+                  <option>Freelance / Tự kinh doanh</option>
+                  <option>Tăng kỹ năng cá nhân</option>
+                  <option>Xây dựng dự án riêng</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Khóa học muốn đăng ký <span style="color:var(--a2)">*</span></label>
+              <div class="pick-grid mt-2" id="pickGrid">
+                <label class="pick-item"><input type="checkbox" value="HTML5 Toàn Tập"/><span>🌐 HTML5 Toàn Tập</span></label>
+                <label class="pick-item"><input type="checkbox" value="CSS3 & Flexbox/Grid"/><span>🎨 CSS3 & Grid</span></label>
+                <label class="pick-item"><input type="checkbox" value="JavaScript ES6+"/><span>⚡ JavaScript ES6+</span></label>
+                <label class="pick-item"><input type="checkbox" value="React 18"/><span>⚛️ React 18</span></label>
+                <label class="pick-item"><input type="checkbox" value="Node.js & Express"/><span>🚀 Node.js</span></label>
+                <label class="pick-item"><input type="checkbox" value="Full-Stack Bootcamp"/><span>🔥 Full-Stack</span></label>
+              </div>
+              <div id="courseError" class="text-danger mt-1" style="font-size:.75rem;display:none">Vui lòng chọn ít nhất 1 khóa học.</div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Ghi chú (tùy chọn)</label>
+              <textarea class="form-control" id="note" placeholder="Bạn muốn chia sẻ thêm điều gì không?"></textarea>
+            </div>
+
+            <hr class="dark mb-4"/>
+
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+              <p class="mb-0" style="font-size:.78rem;color:var(--muted)">
+                Bằng cách đăng ký, bạn đồng ý với<br>
+                <a href="#" style="color:var(--accent)">Điều khoản sử dụng</a> của devAcademy.
+              </p>
+              <button type="submit" class="btn-submit">
+                <i class="bi bi-send-fill me-2"></i>Gửi đăng ký
+              </button>
+            </div>
+
+          </form>
+        </div><!-- /form-box -->
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <p style="color:var(--muted);font-size:.8rem">© 2025 devAcademy · Thiết kế với ♥ tại Hà Nội</p>
+  </div>
+</footer>
+
+<!-- ── TOAST ── -->
+<div class="toast-custom" id="toast">
+  <i class="bi bi-check-circle-fill" style="font-size:1.1rem"></i>
+  Đăng ký thành công! Chúng tôi sẽ liên hệ sớm.
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // ── SCROLL REVEAL ──
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:.1});
+  document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+
+  // ── FILTER TABS ──
+  const tabs = document.querySelectorAll('.filter-tab');
+  tabs.forEach(t=>{
+    t.style.cssText = 'background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);border-radius:7px;font-size:.8rem;padding:.35rem .9rem';
+    t.addEventListener('click',()=>{
+      tabs.forEach(x=>{ x.style.background='rgba(255,255,255,.05)'; x.style.color='var(--muted)'; x.style.borderColor='var(--border)'; x.classList.remove('active'); });
+      t.style.background='rgba(91,110,245,.18)'; t.style.color='var(--accent)'; t.style.borderColor='rgba(91,110,245,.4)'; t.classList.add('active');
+      const f = t.dataset.filter;
+      document.querySelectorAll('.course-item').forEach(c=>{
+        c.style.display = (f==='all'||c.dataset.level===f) ? '' : 'none';
+      });
+    });
+  });
+  // init active tab style
+  document.querySelector('.filter-tab.active').style.cssText =
+    'background:rgba(91,110,245,.18);color:var(--accent);border:1px solid rgba(91,110,245,.4);border-radius:7px;font-size:.8rem;padding:.35rem .9rem';
+
+  // ── PICK COURSE FROM CARD ──
+  function pickCourse(name){
+    document.getElementById('register').scrollIntoView({behavior:'smooth'});
+    setTimeout(()=>{
+      document.querySelectorAll('#pickGrid input').forEach(cb=>{
+        if(cb.value.toLowerCase().includes(name.split(' ')[0].toLowerCase())||
+           name.toLowerCase().includes(cb.value.split(' ')[0].toLowerCase())){
+          cb.checked = true;
+        }
+      });
+    },650);
+  }
+
+  // ── FORM SUBMIT ──
+  document.getElementById('regForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    let valid = true;
+
+    // Bootstrap validation
+    this.classList.add('was-validated');
+
+    // Check courses
+    const picked = [...document.querySelectorAll('#pickGrid input:checked')];
+    const err = document.getElementById('courseError');
+    if(!picked.length){ err.style.display='block'; valid=false; }
+    else err.style.display='none';
+
+    if(!this.checkValidity()) valid=false;
+
+    if(!valid) return;
+
+    // Show toast
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    this.reset(); this.classList.remove('was-validated');
+    setTimeout(()=>toast.classList.remove('show'),4500);
+  });
+</script>
+</body>
+</html>

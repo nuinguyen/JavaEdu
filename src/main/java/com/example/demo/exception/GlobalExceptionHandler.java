@@ -8,7 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -22,6 +24,14 @@ public class GlobalExceptionHandler {
 		model.addAttribute("message", ex.getMessage());
 		model.addAttribute("statusCode", 404);
 		return "error";
+	}
+
+	/** File upload vượt giới hạn: redirect để tránh forward request multipart sang /error (gây lỗi parse lần 2). */
+	@ExceptionHandler(MaxUploadSizeExceededException.class)
+	public String handleMaxUploadSizeExceeded(MaxUploadSizeExceededException ex, RedirectAttributes redirect) {
+		log.warn("Upload vượt giới hạn: {}", ex.getMessage());
+		redirect.addFlashAttribute("errorMessage", "Kích thước file vượt giới hạn (tối đa 5MB). Vui lòng chọn ảnh nhỏ hơn.");
+		return "redirect:/admin/courses";
 	}
 
 	/** Thiếu tài nguyên tĩnh (favicon.ico, v.v.): trả 404 không body, không hiện trang lỗi. */

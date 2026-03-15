@@ -13,13 +13,13 @@
           <div class="sec-title mb-0" style="font-size:1.2rem">Danh sách User / Học viên</div>
           <div style="font-size:.8rem;color:var(--muted)" th:text="${userPage.totalElements} + ' user trong hệ thống'">0 user</div>
         </div>
-        <a th:href="@{/users/new}" class="admin-btn-primary"><i class="bi bi-plus-lg"></i> Thêm user</a>
+        <a th:href="@{/admin/users/new}" class="admin-btn-primary"><i class="bi bi-plus-lg"></i> Thêm user</a>
       </div>
 
       <div th:if="${message}" class="alert alert-admin-success py-2 small mb-3" th:text="${message}"></div>
 
       <div class="chart-card mb-3">
-        <form th:action="@{/users}" method="get" class="row g-2 align-items-center">
+        <form th:action="@{/admin/users}" method="get" class="row g-2 align-items-center">
           <div class="col-12 col-md-4">
             <div style="position:relative">
               <i class="bi bi-search" style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--muted)"></i>
@@ -37,7 +37,7 @@
       <div th:if="${#lists.isEmpty(users)}" class="chart-card">
         <div class="text-center py-5" style="color:var(--muted)">
           <p th:if="${searchKeyword != null && !#strings.isEmpty(searchKeyword)}">Không tìm thấy user nào phù hợp.</p>
-          <p th:unless="${searchKeyword != null && !#strings.isEmpty(searchKeyword)}">Chưa có user nào. <a th:href="@{/users/new}" style="color:var(--accent)">Thêm user</a> để bắt đầu.</p>
+          <p th:unless="${searchKeyword != null && !#strings.isEmpty(searchKeyword)}">Chưa có user nào. <a th:href="@{/admin/users/new}" style="color:var(--accent)">Thêm user</a> để bắt đầu.</p>
         </div>
       </div>
 
@@ -71,8 +71,8 @@
               <td style="color:var(--muted);font-size:.8rem">—</td>
               <td>
                 <div class="d-flex gap-1">
-                  <a th:href="@{/users/{id}/edit(id=${user.id})}" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem" title="Sửa"><i class="bi bi-pencil"></i></a>
-                  <form th:action="@{/users/{id}/delete(id=${user.id})}" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa user này?');">
+                  <a th:href="@{/admin/users/{id}/edit(id=${user.id})}" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem" title="Sửa"><i class="bi bi-pencil"></i></a>
+                  <form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa user này?');">
                     <button type="submit" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem;border:none" title="Xóa"><i class="bi bi-trash text-danger"></i></button>
                   </form>
                 </div>
@@ -85,8 +85,8 @@
       <div th:if="${!#lists.isEmpty(users) && userPage.totalPages > 1}" class="d-flex justify-content-between align-items-center mt-3" style="font-size:.85rem;color:var(--muted)">
         <span>Trang <span th:text="${userPage.number + 1}">1</span> / <span th:text="${userPage.totalPages}">1</span> (<span th:text="${userPage.totalElements}">0</span> user)</span>
         <span>
-          <a th:if="${!userPage.first}" th:href="@{/users(q=${searchKeyword}, page=${userPage.number - 1}, size=${userPage.size})}" class="admin-btn-outline me-1">Trước</a>
-          <a th:if="${!userPage.last}" th:href="@{/users(q=${searchKeyword}, page=${userPage.number + 1}, size=${userPage.size})}" class="admin-btn-outline">Sau</a>
+          <a th:if="${!userPage.first}" th:href="@{/admin/users(q=${searchKeyword}, page=${userPage.number - 1}, size=${userPage.size})}" class="admin-btn-outline me-1">Trước</a>
+          <a th:if="${!userPage.last}" th:href="@{/admin/users(q=${searchKeyword}, page=${userPage.number + 1}, size=${userPage.size})}" class="admin-btn-outline">Sau</a>
         </span>
       </div>
     </div>

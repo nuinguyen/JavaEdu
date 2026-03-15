@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
-@RequestMapping("/users")
+@RequestMapping("/admin/users")
 public class UserController {
 
 	private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -72,7 +72,7 @@ public class UserController {
 			})
 			.orElseGet(() -> {
 				redirect.addFlashAttribute("message", "Không tìm thấy user.");
-				return "redirect:/users";
+				return "redirect:/admin/users";
 			});
 	}
 
@@ -117,7 +117,7 @@ public class UserController {
 		try {
 			userRepository.save(user);
 			redirect.addFlashAttribute("message", isNew ? "Đã thêm user." : "Đã cập nhật user.");
-			return "redirect:/users";
+			return "redirect:/admin/users";
 		} catch (Exception e) {
 			log.error("Lỗi khi lưu user: {}", e.getMessage(), e);
 			model.addAttribute("title", isNew ? "Thêm User" : "Sửa User");
@@ -132,6 +132,6 @@ public class UserController {
 	public String delete(@PathVariable Long id, RedirectAttributes redirect) {
 		userRepository.deleteById(id);
 		redirect.addFlashAttribute("message", "Đã xóa user.");
-		return "redirect:/users";
+		return "redirect:/admin/users";
 	}
 }

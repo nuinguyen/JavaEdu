@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 
 <head>
   <meta charset="UTF-8" />
@@ -8,9 +8,6 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap"
-    rel="stylesheet" />
 
   <style>
     :root {
@@ -574,18 +571,23 @@
   <!-- ── NAVBAR ── -->
   <nav class="navbar navbar-expand-lg sticky-top" style="background:rgba(7,8,15,.88)">
     <div class="container">
-      <a class="navbar-brand" href="#">dev<span>Academy</span></a>
+      <a class="navbar-brand" href="/">dev<span>Academy</span></a>
       <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
         data-bs-target="#navMenu" style="color:var(--muted)">
         <i class="bi bi-list fs-4"></i>
       </button>
       <div class="collapse navbar-collapse" id="navMenu">
         <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1 py-2 py-lg-0">
-          <li class="nav-item"><a class="nav-link px-3" href="#">Trang chủ</a></li>
-          <li class="nav-item"><a class="nav-link px-3" href="#courses">Khóa học</a></li>
-          <li class="nav-item"><a class="nav-link px-3" href="#">Blog</a></li>
-          <li class="nav-item ms-lg-2">
-            <a class="nav-link btn-enroll" href="#register">Đăng ký ngay</a>
+          <li class="nav-item"><a class="nav-link px-3 active" href="/">Trang chủ</a></li>
+          <li class="nav-item"><a class="nav-link px-3" href="/catalog">Khóa học</a></li>
+          <li th:if="${currentUser != null}" class="nav-item"><a class="nav-link px-3" th:href="@{/my-courses}">Của
+              tôi</a></li>
+          <li th:if="${isAdmin}" class="nav-item"><a class="nav-link px-3" th:href="@{/admin/courses}">Quản lý</a></li>
+          <li class="nav-item ms-lg-2" th:if="${currentUser == null}">
+            <a class="nav-link btn-enroll" th:href="@{/login}">Đăng nhập</a>
+          </li>
+          <li class="nav-item ms-lg-2" th:if="${currentUser != null}">
+            <a class="nav-link btn-enroll" th:href="@{/logout}">Đăng xuất</a>
           </li>
         </ul>
       </div>
@@ -594,8 +596,6 @@
 
   <!-- ── HERO ── -->
   <section class="hero">
-    <div class="hero-blob blob-l"></div>
-    <div class="hero-blob blob-r"></div>
 
     <div class="container">
       <div class="hero-chip"><span class="chip-dot"></span>Nền tảng học lập trình web #1</div>
@@ -605,13 +605,13 @@
       <p>Khóa học thực chiến, bám sát thực tế doanh nghiệp. Mentor đồng hành, lộ trình rõ ràng — bạn chỉ cần học.</p>
 
       <div class="d-flex justify-content-center gap-3 flex-wrap">
-        <a href="#courses" class="btn px-4 py-2 fw-bold"
+        <a href="/catalog" class="btn px-4 py-2 fw-bold"
           style="background:linear-gradient(135deg,var(--accent),#4250d4);color:#fff;border-radius:9px;box-shadow:0 0 28px rgba(91,110,245,.4);font-family:'Syne',sans-serif">
           Khám phá khóa học →
         </a>
-        <a href="#register" class="btn px-4 py-2"
+        <a href="/catalog" class="btn px-4 py-2"
           style="background:transparent;color:var(--text);border:1px solid var(--border);border-radius:9px;font-family:'Syne',sans-serif;font-weight:600">
-          Đăng ký miễn phí
+          Xem tất cả khóa học
         </a>
       </div>
     </div>
@@ -649,110 +649,152 @@
         <div class="section-title">Chọn khóa học phù hợp với bạn</div>
       </div>
 
-      <!-- Filter tabs -->
+      <!-- Filter tabs (free/paid) -->
       <div class="d-flex justify-content-center gap-2 flex-wrap mb-4 fade-up">
         <button class="btn btn-sm filter-tab active" data-filter="all">Tất cả</button>
-        <button class="btn btn-sm filter-tab" data-filter="basic">Cơ bản</button>
-        <button class="btn btn-sm filter-tab" data-filter="mid">Trung cấp</button>
-        <button class="btn btn-sm filter-tab" data-filter="adv">Nâng cao</button>
+        <button class="btn btn-sm filter-tab" data-filter="free">Miễn phí</button>
+        <button class="btn btn-sm filter-tab" data-filter="paid">Có phí</button>
       </div>
 
-      <div class="row g-4" id="courseGrid">
+      <!-- ── DYNAMIC: courses from DB ── -->
+      <div class="row g-4" id="courseGrid" th:if="${courses != null and !#lists.isEmpty(courses)}">
+        <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" th:each="course, stat : ${courses}"
+          th:data-price="${course.price == null || course.price == 0} ? 'free' : 'paid'">
+          <div class="course-card" th:classappend="${stat.index == 5} ? 'featured-card' : ''">
+            <!-- Banner -->
+            <div class="card-banner" th:style="${stat.index % 6 == 0} ? 'background:linear-gradient(135deg,#1a0800,#3d1500)' :
+                            (${stat.index % 6 == 1} ? 'background:linear-gradient(135deg,#000618,#071040)' :
+                            (${stat.index % 6 == 2} ? 'background:linear-gradient(135deg,#181600,#3d3800)' :
+                            (${stat.index % 6 == 3} ? 'background:linear-gradient(135deg,#001018,#002535)' :
+                            (${stat.index % 6 == 4} ? 'background:linear-gradient(135deg,#001608,#003515)' :
+                                                       'background:linear-gradient(135deg,#0c0018,#200035)'))))">
+              <span th:text="${stat.index % 6 == 0} ? '🌐' :
+                             (${stat.index % 6 == 1} ? '🎨' :
+                             (${stat.index % 6 == 2} ? '⚡' :
+                             (${stat.index % 6 == 3} ? '⚛️' :
+                             (${stat.index % 6 == 4} ? '🚀' : '🔥'))))">📚</span>
+              <span class="lang-pill" th:style="${stat.index % 6 == 0} ? 'background:#e8572a;color:#fff' :
+                               (${stat.index % 6 == 1} ? 'background:#2965d6;color:#fff' :
+                               (${stat.index % 6 == 2} ? 'background:#efd81d;color:#000' :
+                               (${stat.index % 6 == 3} ? 'background:#61dafb;color:#000' :
+                               (${stat.index % 6 == 4} ? 'background:#3c873a;color:#fff' :
+                                                          'background:#5b6ef5;color:#fff'))))"
+                th:text="${course.instructor}">Giảng viên</span>
+            </div>
+            <!-- Body -->
+            <div class="card-body-inner">
+              <div class="card-tags mb-1 d-flex gap-1 flex-wrap">
+                <span class="badge" th:if="${course.durationWeeks != null}"
+                  th:text="${course.durationWeeks + ' tuần'}">—</span>
+                <span class="badge" th:text="${course.maxStudents + ' học viên'}">30 học viên</span>
+                <span class="badge" th:if="${stat.index == 5}"
+                  style="background:rgba(91,110,245,.18)!important;color:var(--accent)!important;border-color:rgba(91,110,245,.3)!important">🔥
+                  Hot</span>
+              </div>
+              <div class="card-title-text" th:text="${course.title}">Tên khóa học</div>
+              <div class="card-desc"
+                th:text="${course.description != null and !course.description.isEmpty() ? course.description : 'Khóa học chất lượng, nội dung thực chiến, bám sát nhu cầu thực tế.'}">
+                Mô tả</div>
+              <div class="card-footer-inner">
+                <div>
+                  <span class="price-main price-free" th:if="${course.price == null || course.price == 0}">Miễn
+                    phí</span>
+                  <span class="price-main" th:if="${course.price != null and course.price != 0}"
+                    th:text="${#numbers.formatDecimal(course.price, 1, 'POINT', 0, 'POINT') + ' ₫'}">—</span>
+                </div>
+                <a th:href="@{/courses/{id}(id=${course.id})}" class="btn-pick">Đăng ký</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /row dynamic -->
 
+      <!-- ── STATIC FALLBACK (shown only if no DB courses) ── -->
+      <div class="row g-4" id="courseGridStatic" th:unless="${courses != null and !#lists.isEmpty(courses)}">
         <!-- HTML -->
-        <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-level="basic">
+        <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-price="free">
           <div class="course-card">
             <div class="card-banner banner-html">🌐<span class="lang-pill pill-html">HTML5</span></div>
             <div class="card-body-inner">
-              <div class="card-tags mb-1 d-flex gap-1 flex-wrap">
-                <span class="badge">Cơ bản</span><span class="badge">20 bài</span><span class="badge">8 giờ</span>
-              </div>
+              <div class="card-tags mb-1 d-flex gap-1 flex-wrap"><span class="badge">Cơ bản</span><span class="badge">20
+                  bài</span><span class="badge">8 giờ</span></div>
               <div class="card-title-text">HTML5 Toàn Tập – Nền Tảng Web</div>
               <div class="card-desc">Cấu trúc trang, semantic tags, forms, SEO cơ bản. Lý tưởng cho người mới bắt đầu.
               </div>
               <div class="card-footer-inner">
                 <div><span class="price-main price-free">Miễn phí</span></div>
-                <button class="btn-pick" onclick="pickCourse('HTML5 Toàn Tập')">Đăng ký</button>
+                <a href="/catalog" class="btn-pick">Đăng ký</a>
               </div>
             </div>
           </div>
         </div>
-
         <!-- CSS -->
-        <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-level="mid">
+        <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-price="paid">
           <div class="course-card">
             <div class="card-banner banner-css">🎨<span class="lang-pill pill-css">CSS3</span></div>
             <div class="card-body-inner">
-              <div class="card-tags mb-1 d-flex gap-1 flex-wrap">
-                <span class="badge">Trung cấp</span><span class="badge">32 bài</span><span class="badge">14 giờ</span>
-              </div>
-              <div class="card-title-text">CSS3 & Flexbox / Grid Mastery</div>
+              <div class="card-tags mb-1 d-flex gap-1 flex-wrap"><span class="badge">Trung cấp</span><span
+                  class="badge">32 bài</span><span class="badge">14 giờ</span></div>
+              <div class="card-title-text">CSS3 &amp; Flexbox / Grid Mastery</div>
               <div class="card-desc">Layout hiện đại, responsive design, animations và CSS Variables nâng cao.</div>
               <div class="card-footer-inner">
-                <div><span class="price-main">499k</span><span class="price-old">990k</span></div>
-                <button class="btn-pick" onclick="pickCourse('CSS3 & Flexbox/Grid')">Đăng ký</button>
+                <div><span class="price-main">499.000 ₫</span></div>
+                <a href="/catalog" class="btn-pick">Đăng ký</a>
               </div>
             </div>
           </div>
         </div>
-
         <!-- JS -->
-        <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-level="mid">
+        <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-price="paid">
           <div class="course-card">
             <div class="card-banner banner-js">⚡<span class="lang-pill pill-js">JavaScript</span></div>
             <div class="card-body-inner">
-              <div class="card-tags mb-1 d-flex gap-1 flex-wrap">
-                <span class="badge">Trung cấp</span><span class="badge">50 bài</span><span class="badge">22 giờ</span>
-              </div>
+              <div class="card-tags mb-1 d-flex gap-1 flex-wrap"><span class="badge">Trung cấp</span><span
+                  class="badge">50 bài</span><span class="badge">22 giờ</span></div>
               <div class="card-title-text">JavaScript ES6+ Thực Chiến</div>
               <div class="card-desc">DOM, async/await, Fetch API, module, closure — xây dựng mini-projects thực tế.
               </div>
               <div class="card-footer-inner">
-                <div><span class="price-main">799k</span><span class="price-old">1.5tr</span></div>
-                <button class="btn-pick" onclick="pickCourse('JavaScript ES6+')">Đăng ký</button>
+                <div><span class="price-main">799.000 ₫</span></div>
+                <a href="/catalog" class="btn-pick">Đăng ký</a>
               </div>
             </div>
           </div>
         </div>
-
         <!-- React -->
-        <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-level="adv">
+        <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-price="paid">
           <div class="course-card">
             <div class="card-banner banner-react">⚛️<span class="lang-pill pill-react">React</span></div>
             <div class="card-body-inner">
-              <div class="card-tags mb-1 d-flex gap-1 flex-wrap">
-                <span class="badge">Nâng cao</span><span class="badge">45 bài</span><span class="badge">20 giờ</span>
-              </div>
+              <div class="card-tags mb-1 d-flex gap-1 flex-wrap"><span class="badge">Nâng cao</span><span
+                  class="badge">45 bài</span><span class="badge">20 giờ</span></div>
               <div class="card-title-text">React 18 – Xây Dựng SPA Hiện Đại</div>
               <div class="card-desc">Hooks, Context, React Router, tích hợp API và deploy lên Vercel.</div>
               <div class="card-footer-inner">
-                <div><span class="price-main">1.2tr</span><span class="price-old">2.4tr</span></div>
-                <button class="btn-pick" onclick="pickCourse('React 18')">Đăng ký</button>
+                <div><span class="price-main">1.200.000 ₫</span></div>
+                <a href="/catalog" class="btn-pick">Đăng ký</a>
               </div>
             </div>
           </div>
         </div>
-
         <!-- Node -->
-        <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-level="adv">
+        <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-price="paid">
           <div class="course-card">
             <div class="card-banner banner-node">🚀<span class="lang-pill pill-node">Node.js</span></div>
             <div class="card-body-inner">
-              <div class="card-tags mb-1 d-flex gap-1 flex-wrap">
-                <span class="badge">Nâng cao</span><span class="badge">38 bài</span><span class="badge">18 giờ</span>
-              </div>
-              <div class="card-title-text">Node.js & Express – Backend Từ Đầu</div>
+              <div class="card-tags mb-1 d-flex gap-1 flex-wrap"><span class="badge">Nâng cao</span><span
+                  class="badge">38 bài</span><span class="badge">18 giờ</span></div>
+              <div class="card-title-text">Node.js &amp; Express – Backend Từ Đầu</div>
               <div class="card-desc">REST API, JWT, MongoDB, tối ưu hiệu suất và deploy lên Railway/Render.</div>
               <div class="card-footer-inner">
-                <div><span class="price-main">1.1tr</span><span class="price-old">2.2tr</span></div>
-                <button class="btn-pick" onclick="pickCourse('Node.js & Express')">Đăng ký</button>
+                <div><span class="price-main">1.100.000 ₫</span></div>
+                <a href="/catalog" class="btn-pick">Đăng ký</a>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Fullstack -->
-        <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-level="adv">
+        <!-- Full-Stack -->
+        <div class="col-12 col-sm-6 col-lg-4 course-item fade-up" data-price="paid">
           <div class="course-card" style="border-color:rgba(91,110,245,.35)">
             <div class="card-banner banner-full">🔥<span class="lang-pill pill-full">Full-Stack</span></div>
             <div class="card-body-inner">
@@ -765,14 +807,22 @@
               <div class="card-title-text">Full-Stack Web Developer Bootcamp</div>
               <div class="card-desc">HTML → CSS → JS → React → Node trong một lộ trình tiết kiệm nhất.</div>
               <div class="card-footer-inner">
-                <div><span class="price-main">2.5tr</span><span class="price-old">6.5tr</span></div>
-                <button class="btn-pick" onclick="pickCourse('Full-Stack Bootcamp')">Đăng ký</button>
+                <div><span class="price-main">2.500.000 ₫</span></div>
+                <a href="/catalog" class="btn-pick">Đăng ký</a>
               </div>
             </div>
           </div>
         </div>
+      </div><!-- /row static -->
 
-      </div><!-- /row -->
+      <!-- View All button -->
+      <div class="text-center mt-5 fade-up">
+        <a href="/catalog" class="btn px-5 py-2"
+          style="background:rgba(91,110,245,.12);border:1px solid rgba(91,110,245,.3);color:var(--accent);border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;transition:all .2s">
+          Xem tất cả khóa học <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </div>
+
     </div>
   </section>
 

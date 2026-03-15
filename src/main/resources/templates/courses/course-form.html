@@ -12,7 +12,7 @@
         <div class="col-md-8 col-lg-6">
           <div class="chart-card">
             <div class="sec-title mb-3" th:text="${title}">Thêm khóa học</div>
-            <form th:action="@{/courses/save}" th:object="${course}" method="post" enctype="multipart/form-data">
+            <form th:action="@{/admin/courses/save}" th:object="${course}" method="post" enctype="multipart/form-data">
               <input type="hidden" th:field="*{id}">
               <div class="mb-3">
                 <label for="title" class="form-label admin-label">Tiêu đề khóa học <span style="color:var(--accent2)">*</span></label>
@@ -64,7 +64,7 @@
               </div>
               <div class="d-flex gap-2">
                 <button type="submit" class="admin-btn-primary">Lưu</button>
-                <a th:href="@{/courses}" class="admin-btn-outline">Hủy</a>
+                <a th:href="@{/admin/courses}" class="admin-btn-outline">Hủy</a>
               </div>
             </form>
           </div>

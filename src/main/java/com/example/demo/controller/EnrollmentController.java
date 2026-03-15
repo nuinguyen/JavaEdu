@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/enrollments")
+@RequestMapping("/admin/enrollments")
 public class EnrollmentController {
 
 	private final EnrollmentService enrollmentService;
@@ -44,7 +44,7 @@ public class EnrollmentController {
 		if (courseId != null) {
 			return "redirect:/courses/" + courseId;
 		}
-		return "redirect:/enrollments";
+		return "redirect:/admin/enrollments";
 	}
 
 	@PostMapping("/{id}/reject")
@@ -55,6 +55,6 @@ public class EnrollmentController {
 		if (courseId != null) {
 			return "redirect:/courses/" + courseId;
 		}
-		return "redirect:/enrollments";
+		return "redirect:/admin/enrollments";
 	}
 }

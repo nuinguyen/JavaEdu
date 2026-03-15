@@ -263,9 +263,9 @@
     <div class="sidebar-section-label">Tổng quan</div>
     <a href="/admin" class="nav-item-custom" th:classappend="${activePage == 'home'} ? 'active' : ''"><i class="bi bi-grid-1x2-fill"></i> Trang chủ</a>
     <div class="sidebar-section-label">Quản lý</div>
-    <a th:href="@{/users}" class="nav-item-custom" th:classappend="${activePage == 'users'} ? 'active' : ''"><i class="bi bi-people-fill"></i> Học viên / User</a>
-    <a th:href="@{/courses}" class="nav-item-custom" th:classappend="${activePage == 'courses'} ? 'active' : ''"><i class="bi bi-collection-fill"></i> Khóa học</a>
-    <a th:href="@{/enrollments}" class="nav-item-custom" th:classappend="${activePage == 'enrollments'} ? 'active' : ''"><i class="bi bi-receipt"></i> Đăng ký</a>
+    <a th:href="@{/admin/users}" class="nav-item-custom" th:classappend="${activePage == 'users'} ? 'active' : ''"><i class="bi bi-people-fill"></i> Học viên / User</a>
+    <a th:href="@{/admin/courses}" class="nav-item-custom" th:classappend="${activePage == 'courses'} ? 'active' : ''"><i class="bi bi-collection-fill"></i> Khóa học</a>
+    <a th:href="@{/admin/enrollments}" class="nav-item-custom" th:classappend="${activePage == 'enrollments'} ? 'active' : ''"><i class="bi bi-receipt"></i> Đăng ký</a>
     <div class="sidebar-bottom">
       <a th:href="@{/logout}" class="user-card" style="text-decoration:none;color:inherit">
         <div class="user-avatar" th:text="${(currentUser != null and currentUser.name != null) ? (#strings.length(currentUser.name) >= 2 ? #strings.substring(currentUser.name, 0, 2) : #strings.substring(currentUser.name, 0, 1)) : 'AD'}">AD</div>

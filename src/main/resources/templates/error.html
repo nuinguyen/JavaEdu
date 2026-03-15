@@ -15,7 +15,7 @@
 							</div>
 							<h1 class="h4 fw-bold mb-2" th:text="${title}">Không tìm thấy</h1>
 							<p class="text-secondary mb-4" th:text="${message}">Tài nguyên không tồn tại.</p>
-							<p class="small text-muted mb-4">Mã lỗi: <span th:text="${statusCode}">404</span></p>
+							<p class="small text-muted mb-4">Mã lỗi: <span th:text="${statusCode != null ? statusCode : status}">404</span></p>
 							<a href="/" class="btn btn-app-primary me-2">Về trang chủ</a>
 							<a href="javascript:history.back()" class="btn btn-app-outline">Quay lại</a>
 						</div>

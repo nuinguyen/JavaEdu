@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -35,14 +36,14 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-			.csrf(csrf -> csrf.ignoringRequestMatchers("/login", "/logout"))
+			.csrf(csrf -> csrf
+				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+				.ignoringRequestMatchers("/login", "/logout", "/admin/courses/save", "/admin/courses/*/delete"))
 			.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/login", "/logout", "/css/**", "/js/**", "/upload/**", "/error").permitAll()
-				.requestMatchers("/catalog").hasAnyRole("ADMIN", "USER")
-				.requestMatchers("/users/**").hasRole("ADMIN")
-				.requestMatchers("/enrollments/**").hasRole("ADMIN")
-				.requestMatchers("/courses/**").hasAnyRole("ADMIN", "USER")
+				.requestMatchers("/admin/users/**", "/admin/enrollments/**", "/admin/courses/**").hasRole("ADMIN")
+				.requestMatchers("/catalog", "/courses/**", "/my-courses", "/", "/about", "/admin").hasAnyRole("ADMIN", "USER")
 				.anyRequest().authenticated()
 			)
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

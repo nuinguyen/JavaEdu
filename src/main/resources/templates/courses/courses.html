@@ -15,11 +15,12 @@
             <div class="sec-title mb-0" style="font-size:1.2rem">Quản lý Khóa học</div>
             <div style="font-size:.8rem;color:var(--muted)">Bấm Xem để xem chi tiết, Sửa/Xóa để quản lý.</div>
           </div>
-          <a th:href="@{/courses/new}" class="admin-btn-primary"><i class="bi bi-plus-lg"></i> Thêm khóa học</a>
+          <a th:href="@{/admin/courses/new}" class="admin-btn-primary"><i class="bi bi-plus-lg"></i> Thêm khóa học</a>
         </div>
         <div th:if="${message}" class="alert alert-admin-success py-2 small mb-3" th:text="${message}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger py-2 small mb-3" th:text="${errorMessage}"></div>
         <div class="chart-card mb-3">
-          <form th:action="@{/courses}" method="get" class="row g-2 align-items-center">
+          <form th:action="@{/admin/courses}" method="get" class="row g-2 align-items-center">
             <div class="col-12 col-md-4">
               <div style="position:relative">
                 <i class="bi bi-search" style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--muted)"></i>
@@ -31,7 +32,7 @@
           </form>
         </div>
         <div th:if="${#lists.isEmpty(courses)}" class="chart-card">
-          <div class="text-center py-5" style="color:var(--muted)">Chưa có khóa học nào. <a th:href="@{/courses/new}" style="color:var(--accent)">Thêm khóa học</a> để bắt đầu.</div>
+          <div class="text-center py-5" style="color:var(--muted)">Chưa có khóa học nào. <a th:href="@{/admin/courses/new}" style="color:var(--accent)">Thêm khóa học</a> để bắt đầu.</div>
         </div>
         <div th:if="${!#lists.isEmpty(courses)}" class="data-table">
           <table>
@@ -69,8 +70,8 @@
                 <td>
                   <div class="d-flex gap-1">
                     <a th:href="@{/courses/{id}(id=${course.id})}" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem" title="Xem"><i class="bi bi-eye"></i></a>
-                    <a th:href="@{/courses/{id}/edit(id=${course.id})}" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem" title="Sửa"><i class="bi bi-pencil"></i></a>
-                    <form th:action="@{/courses/{id}/delete(id=${course.id})}" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa khóa học này?');">
+                    <a th:href="@{/admin/courses/{id}/edit(id=${course.id})}" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem" title="Sửa"><i class="bi bi-pencil"></i></a>
+                    <form th:action="@{/admin/courses/{id}/delete(id=${course.id})}" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa khóa học này?');">
                       <button type="submit" class="topbar-icon" style="width:28px;height:28px;font-size:.8rem;border:none" title="Xóa"><i class="bi bi-trash text-danger"></i></button>
                     </form>
                   </div>
@@ -82,8 +83,8 @@
         <div th:if="${!#lists.isEmpty(courses) && coursePage.totalPages > 1}" class="d-flex justify-content-between align-items-center mt-3" style="font-size:.85rem;color:var(--muted)">
           <span>Trang <span th:text="${coursePage.number + 1}">1</span> / <span th:text="${coursePage.totalPages}">1</span> (<span th:text="${coursePage.totalElements}">0</span> khóa học)</span>
           <span>
-            <a th:if="${!coursePage.first}" th:href="@{/courses(q=${searchKeyword}, page=${coursePage.number - 1}, size=${coursePage.size})}" class="admin-btn-outline me-1">Trước</a>
-            <a th:if="${!coursePage.last}" th:href="@{/courses(q=${searchKeyword}, page=${coursePage.number + 1}, size=${coursePage.size})}" class="admin-btn-outline">Sau</a>
+            <a th:if="${!coursePage.first}" th:href="@{/admin/courses(q=${searchKeyword}, page=${coursePage.number - 1}, size=${coursePage.size})}" class="admin-btn-outline me-1">Trước</a>
+            <a th:if="${!coursePage.last}" th:href="@{/admin/courses(q=${searchKeyword}, page=${coursePage.number + 1}, size=${coursePage.size})}" class="admin-btn-outline">Sau</a>
           </span>
         </div>
       </div>
@@ -159,7 +160,7 @@
         <div th:if="${message}" class="mb-3 px-4 py-3" style="background:rgba(91,247,168,.1);border:1px solid rgba(91,247,168,.25);color:var(--a3);border-radius:10px;font-size:.9rem" th:text="${message}"></div>
 
         <!-- Search -->
-        <form th:action="@{/courses}" method="get" class="d-flex gap-2 mb-5 flex-wrap">
+        <form th:action="@{/admin/courses}" method="get" class="d-flex gap-2 mb-5 flex-wrap">
           <div class="search-wrap" style="flex:1;min-width:220px;max-width:380px">
             <i class="bi bi-search"></i>
             <input type="text" name="q" th:value="${searchKeyword}" placeholder="Tìm theo tiêu đề hoặc giảng viên...">
@@ -224,8 +225,8 @@
             · <span th:text="${coursePage.totalElements}">0</span> khóa học
           </span>
           <div class="d-flex gap-2">
-            <a th:if="${!coursePage.first}" th:href="@{/courses(q=${searchKeyword}, page=${coursePage.number - 1}, size=${coursePage.size})}" class="page-link-custom"><i class="bi bi-arrow-left me-1"></i>Trước</a>
-            <a th:if="${!coursePage.last}"  th:href="@{/courses(q=${searchKeyword}, page=${coursePage.number + 1}, size=${coursePage.size})}" class="page-link-custom">Sau<i class="bi bi-arrow-right ms-1"></i></a>
+            <a th:if="${!coursePage.first}" th:href="@{/admin/courses(q=${searchKeyword}, page=${coursePage.number - 1}, size=${coursePage.size})}" class="page-link-custom"><i class="bi bi-arrow-left me-1"></i>Trước</a>
+            <a th:if="${!coursePage.last}"  th:href="@{/admin/courses(q=${searchKeyword}, page=${coursePage.number + 1}, size=${coursePage.size})}" class="page-link-custom">Sau<i class="bi bi-arrow-right ms-1"></i></a>
           </div>
         </div>
 
